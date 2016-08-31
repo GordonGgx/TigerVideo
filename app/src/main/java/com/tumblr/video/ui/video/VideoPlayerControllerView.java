@@ -27,7 +27,7 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
     private int mVideoDuration = 0;
     private VideoControlListener mControlListener;
     private PlayScreenState mFullScreenState = PlayScreenState.NORMAL;
-    private VideoPlayState mVideoPlayState = VideoPlayState.NONE;//视频播放的当前状态：播放，暂停
+    private VideoPlayState mVideoPlayState = VideoPlayState.STOP;
 
     public VideoPlayerControllerView(Context context) {
 
@@ -265,9 +265,9 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
         int resId = R.drawable.ic_play;
         switch (mVideoPlayState) {
             case PLAY:
-                resId = R.drawable.ic_bar_pause;
+                resId = R.drawable.ic_pause;
                 break;
-            case NONE:
+            case STOP:
             case PAUSE:
             case FINISH:
                 resId = R.drawable.ic_play;

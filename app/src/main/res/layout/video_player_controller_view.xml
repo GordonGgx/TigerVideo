@@ -28,7 +28,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="@dimen/d_10"
-                android:src="@drawable/ic_bar_maximize"/>
+                android:src="@drawable/ic_fullscreen"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

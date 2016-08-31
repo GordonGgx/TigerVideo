@@ -6,6 +6,8 @@ import com.tumblr.video.bean.VideoData;
 import com.tumblr.video.inject.InjectHelper;
 import com.tumblr.video.inject.InjectView;
 import com.tumblr.video.ui.recycler.CommonRecyclerView;
+import com.tumblr.video.ui.video.VideoPlayState;
+import com.tumblr.video.ui.video.VideoPlayerHelper;
 import com.tumblr.video.util.DBManager;
 import com.tumblr.video.util.UIUtil;
 import com.tumblr.video.util.VideoDataLoadHelper;
@@ -18,10 +20,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements CommonRecyclerView.LoadMoreListener {
+public class MainActivity extends BaseActivity implements
+        CommonRecyclerView.LoadMoreListener, CommonRecyclerView.OnItemClickListener {
 
     @InjectView(id=R.id.video_swipe_refresh_layout)
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -37,6 +41,7 @@ public class MainActivity extends BaseActivity implements CommonRecyclerView.Loa
         View view = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
         InjectHelper.inject(this, view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setOnItemClickListener(this);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -70,7 +75,7 @@ public class MainActivity extends BaseActivity implements CommonRecyclerView.Loa
         mCurPage = 1;
         List<VideoData> videoDatas = DBManager.getInstance().getSQLiteDB().queryPage(VideoData.class, mCurPage, mPageSize);
         if(mVideoAdapter == null) {
-            mVideoAdapter = new VideoAdapter(videoDatas);
+            mVideoAdapter = new VideoAdapter(this, videoDatas);
             mRecyclerView.setAdapter(mVideoAdapter);
         } else {
             mVideoAdapter.reset(videoDatas);
@@ -86,6 +91,12 @@ public class MainActivity extends BaseActivity implements CommonRecyclerView.Loa
         if(videoDatas.size() > 0) {
             mCurPage ++;
         }
+    }
+
+    @Override
+    public void onItemClick(int position, View itemView) {
+
+        VideoPlayerHelper.getInstance(this).play((ViewGroup) itemView, mVideoAdapter.getItem(position).getUrl());
     }
 
     @Override

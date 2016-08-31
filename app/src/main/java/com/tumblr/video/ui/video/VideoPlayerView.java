@@ -11,12 +11,15 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import java.io.IOException;
+
 /**
- * Created by baina on 16-7-29.
+ * Created by laohu on 16-7-29.
  */
 public class VideoPlayerView extends RelativeLayout
         implements View.OnClickListener, TextureView.SurfaceTextureListener {
@@ -25,12 +28,11 @@ public class VideoPlayerView extends RelativeLayout
     private TextureView mTextureView;//视频播放容器
     private VideoPlayerControllerView mVideoPlayerControllerView;//视频底部的播放控制器
     private ProgressBar mProgressBar;//视频加载过程中的进度条
-    private VideoPlayState mVideoPlayState = VideoPlayState.NONE;//视频播放的当前状态：播放，暂停
+    private VideoPlayState mVideoPlayState = VideoPlayState.STOP;//视频播放的当前状态：播放，暂停
 
     private Surface mSurface = null;
     private MediaPlayer mPlayer;
-    private String mVideoUrl;
-    private int mId = -1;
+    private String mVideoUrl = "/storage/emulated/0/download/1461625479791.mp4";
 
     private int mSecProgress = 0;
 
@@ -58,12 +60,27 @@ public class VideoPlayerView extends RelativeLayout
         mProgressBar = (ProgressBar) findViewById(R.id.video_loading);
 
         mVideoPlayerControllerView.setVideoControlListener(mVideoControlListener);
+
+        createMediaPlayer();
     }
 
-    private void createVideoPlayView() {
+    /**
+     * 创建视频播放器
+     */
+    private void createMediaPlayer() {
+
+        mPlayer = new MediaPlayer();
+        addVideoPlayListener();
+    }
+
+    /**
+     * 创建视频显示介质
+     */
+    private void createVideoSurface() {
 
         if(mTextureView == null) {
             mTextureView = new TextureView(getContext());
+            mTextureView.setId(R.id.id_video_texture_view);
             mTextureView.setOnClickListener(this);
             mTextureView.setSurfaceTextureListener(this);
             LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -75,162 +92,122 @@ public class VideoPlayerView extends RelativeLayout
 
     @Override
     public void onClick(View v) {
-        if(v == mTextureView) {
-            mVideoPlayerControllerView.showOrHide();
-        } else if(v.getId() == R.id.play_image) {
-            if(mVideoPlayState == VideoPlayState.NONE) {
-            } else if(mVideoPlayState == VideoPlayState.FINISH) {
-                mPlayer.seekTo(0);
-                updatePlayProgress();
-            }
-            playOrPause();
-        }
-    }
 
-    public void loadVideoUrl(String videoUrl, int id) {
-
-        mVideoUrl = videoUrl;
-        mId = id;
-        createVideoPlayView();
-    }
-
-    /**
-     * 播放或暂停播放控制
-     */
-    private void playOrPause() {
-
-        if(loadVideoAndPlay(mVideoUrl)) {
-            if(isCanPlay()) {//当前处于暂停播放状态
-                startPlay();
-            } else {
-                pausePlay();
-            }
-            mVideoPlayerControllerView.updatePlayButtonIcon();//切换播放时更新播放按钮的图标
-        }
-    }
-
-    private boolean isCanPlay() {
-
-        return mVideoPlayState == VideoPlayState.NONE || mVideoPlayState == VideoPlayState.PAUSE ||
-                mVideoPlayState == VideoPlayState.FINISH;
-    }
-
-    private void showControllerView() {
-
-        if(mVideoPlayerControllerView.getVisibility() == GONE) {
-            mVideoPlayerControllerView.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * 显示加载进度条
-     */
-    private void showLoadingBarIfNeed() {
-
-        if(mProgressBar.getVisibility() == GONE) {
-            mProgressBar.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * 隐藏加载加载进度条
-     */
-    private void hideLoadingBarIfNeed() {
-
-        if(mProgressBar.getVisibility() == VISIBLE) {
-            mProgressBar.setVisibility(GONE);
-        }
-    }
-
-    /**
-     * 加载播放指定URL的视频
-     * @param videoUrl
-     * @return
-     */
-    private boolean loadVideoAndPlay(String videoUrl) {
-
-        if(mPlayer != null) {
-            return true;
-        }
-        setVideoPlayState(VideoPlayState.LOADING);
-        mPlayer = new MediaPlayer();
-        playPrepare(videoUrl);
-        return false;
-    }
-
-    private void setVideoPlayState(VideoPlayState state) {
-        mVideoPlayState = state;
-        switch (state) {
-            case NONE:
-                hideLoadingBarIfNeed();
+        int id = v.getId();
+        switch (id) {
+            case R.id.iv_video_item_play_btn:
+                playButtonClick();
                 break;
-            case LOADING:
-                showLoadingBarIfNeed();
-                hidePlayButtonIfNeed();
+            case R.id.id_video_texture_view:
+                mVideoPlayerControllerView.showOrHide();
+                break;
+        }
+    }
+
+    private void playButtonClick() {
+
+        switch (mVideoPlayState) {
+            case PLAY:
+                pause();
                 break;
             case PAUSE:
-                showPlayButtonIfNeed();
-                break;
-            case PLAY:
-                showControllerView();
-                updatePlayProgress();
-                hideLoadingBarIfNeed();
-                break;
-            case FINISH:
-                showControllerView();
-                updatePlayProgress();
-                mVideoPlayerControllerView.show();
+                play();
                 break;
         }
     }
 
     /**
-     * 播放准备
+     * 开始播放指定url的视频
+     *
      * @param videoUrl
      */
-    private void playPrepare(String videoUrl) {
+    public void play(String videoUrl) {
 
-        try {
-            if(mPlayer != null) {
-                mPlayer.setOnPreparedListener(mOnPreparedListener);
-                mPlayer.setOnCompletionListener(mOnCompletionListener);
-                mPlayer.setOnErrorListener(mErrorListener);
-                mPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);//缓冲监听
-                mPlayer.setSurface(mSurface);
-                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setScreenOnWhilePlaying(true);
-                mPlayer.setDataSource(videoUrl);
-                mPlayer.prepareAsync();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 开始播放
-     */
-    public void startPlay() {
-
-        createVideoPlayView();
-        mPlayer.start();//开始播放
-        setVideoPlayState(VideoPlayState.PLAY);
+        setVideoPlayState(VideoPlayState.LOADING);
+        createVideoSurface();
+        loadVideo(videoUrl);
     }
 
     /**
      * 暂停播放
      */
-    public void pausePlay() {
+    public void pause() {
 
-        mPlayer.pause();
         setVideoPlayState(VideoPlayState.PAUSE);
+        mPlayer.pause();
     }
 
-    public void finishPlay() {
+    /**
+     * 开始播放
+     */
+    public void play() {
+
+        setVideoPlayState(VideoPlayState.PLAY);
+        mPlayer.start();
+    }
+
+    public void finish() {
 
         mPlayer.pause();
         mPlayer.seekTo(mPlayer.getDuration());
         setVideoPlayState(VideoPlayState.FINISH);
+    }
+
+    private void setVideoPlayState(VideoPlayState state) {
+        mVideoPlayState = state;
+        switch (state) {
+            case STOP:
+                hideLoadingBarIfNeed();
+                mVideoPlayerControllerView.updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+            case LOADING:
+                showLoadingBarIfNeed();
+                break;
+            case PAUSE:
+                mVideoPlayerControllerView.updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+            case PLAY:
+                showControllerViewIfNeed();
+                updatePlayProgress();
+                hideLoadingBarIfNeed();
+                mVideoPlayerControllerView.updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+            case FINISH:
+                showControllerViewIfNeed();
+                updatePlayProgress();
+                mVideoPlayerControllerView.show();
+                mVideoPlayerControllerView.updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+        }
+    }
+
+    /**
+     * 为播放器添加监听
+     */
+    private void addVideoPlayListener() {
+
+        mPlayer.setOnPreparedListener(mOnPreparedListener);
+        mPlayer.setOnCompletionListener(mOnCompletionListener);
+        mPlayer.setOnErrorListener(mErrorListener);
+        mPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);//缓冲监听
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mPlayer.setScreenOnWhilePlaying(true);
+    }
+
+    /**
+     * 加载准备指定的视频
+     *
+     * @param videoUrl
+     */
+    private void loadVideo(String videoUrl) {
+
+        try {
+            mPlayer.setSurface(mSurface);
+            mPlayer.setDataSource(videoUrl);
+            mPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -238,13 +215,12 @@ public class VideoPlayerView extends RelativeLayout
      */
     private void updatePlayProgress() {
 
-        if(mPlayer != null) {
-            int duration = mPlayer.getDuration();
-            int playTime = mPlayer.getCurrentPosition();
-            mVideoPlayerControllerView.setVideoDuration(duration);
-            mVideoPlayerControllerView.setVideoPlayTime(playTime);
-            mVideoPlayerControllerView.setSecondaryProgress(mSecProgress);
-        }
+        int duration = mPlayer.getDuration();
+        int playTime = mPlayer.getCurrentPosition();
+        mVideoPlayerControllerView.setVideoDuration(duration);
+        mVideoPlayerControllerView.setVideoPlayTime(playTime);
+        mVideoPlayerControllerView.setSecondaryProgress(mSecProgress);
+
         if(mVideoPlayState == VideoPlayState.PLAY) {
 
             postDelayed(new Runnable() {
@@ -267,27 +243,11 @@ public class VideoPlayerView extends RelativeLayout
         }
     }
 
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-    }
-
     private MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mp) {
 
-            startPlay();
+            play();
         }
     };
 
@@ -317,7 +277,7 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onCompletion(MediaPlayer mp) {
 
-            finishPlay();
+            finish();
         }
     };
 
@@ -344,26 +304,20 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onControllerShow() {
 
-            showPlayButtonIfNeed();
         }
 
         @Override
         public void onControllerHide() {
 
-            if(mVideoPlayState == VideoPlayState.PLAY) {
-                hidePlayButtonIfNeed();
-            }
         }
     };
 
     public void onDestroy() {
 
         mVideoPlayerControllerView.onDestroy();
-        setVideoPlayState(VideoPlayState.NONE);
+        setVideoPlayState(VideoPlayState.STOP);
         if(mPlayer != null) {
-            mPlayer.stop();
             mPlayer.release();
-            mPlayer = null;
         }
         if(mSurface != null) {
             mSurface.release();
@@ -371,5 +325,59 @@ public class VideoPlayerView extends RelativeLayout
         }
         mVideoContainer.removeView(mTextureView);
         mTextureView = null;
+        ((ViewGroup)getParent()).removeView(this);
+    }
+
+    public VideoPlayState getVideoPlayState() {
+
+        return mVideoPlayState;
+    }
+
+    /**---------------- 界面UI控制 ----------------------**/
+    /**
+     * 显示控制条
+     */
+    private void showControllerViewIfNeed() {
+
+        if(mVideoPlayerControllerView.getVisibility() == GONE) {
+            mVideoPlayerControllerView.setVisibility(VISIBLE);
+        }
+    }
+
+    /**
+     * 显示加载进度条
+     */
+    private void showLoadingBarIfNeed() {
+
+        if(mProgressBar.getVisibility() == GONE) {
+            mProgressBar.setVisibility(VISIBLE);
+        }
+    }
+
+    /**
+     * 隐藏加载加载进度条
+     */
+    private void hideLoadingBarIfNeed() {
+
+        if(mProgressBar.getVisibility() == VISIBLE) {
+            mProgressBar.setVisibility(GONE);
+        }
+    }
+
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 }

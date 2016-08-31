@@ -5,5 +5,5 @@ package com.tumblr.video.ui.video;
  * @site: http://ittiger.cn
  */
 public enum VideoPlayState {
-    NONE, LOADING, PLAY, PAUSE, FINISH
+    STOP, LOADING, PLAY, PAUSE, FINISH
 }
