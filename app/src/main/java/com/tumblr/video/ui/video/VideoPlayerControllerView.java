@@ -23,11 +23,10 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
     private SeekBar mSeekBar;
     private ProgressBar mCacheProgressBar;
     private View mControllerBar;
-    private ImageView mVideoPlayButton;
+
     private int mVideoDuration = 0;
     private VideoControlListener mControlListener;
     private PlayScreenState mFullScreenState = PlayScreenState.NORMAL;
-    private VideoPlayState mVideoPlayState = VideoPlayState.STOP;
 
     public VideoPlayerControllerView(Context context) {
 
@@ -54,8 +53,6 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
         mTotalTimeText = (TextView) findViewById(R.id.total_time);
         mSeekBar = (SeekBar) findViewById(R.id.seekbar);
         mCacheProgressBar = (ProgressBar) findViewById(R.id.video_cache_progress);
-        mVideoPlayButton = (ImageView) findViewById(R.id.iv_video_play_btn);
-
         mFullScreenBtn.setOnClickListener(this);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -255,30 +252,14 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
     public void setPlayScreenState(PlayScreenState state) {
 
         mFullScreenState = state;
-    }
-
-    /**
-     * 更新播放按钮的图标
-     */
-    public void updatePlayButtonIcon() {
-
-        int resId = R.drawable.ic_play;
-        switch (mVideoPlayState) {
-            case PLAY:
-                resId = R.drawable.ic_pause;
+        switch (mFullScreenState) {
+            case FULL_SCREEN:
+                mFullScreenBtn.setImageResource(R.drawable.ic_minimize);
                 break;
-            case STOP:
-            case PAUSE:
-            case FINISH:
-                resId = R.drawable.ic_play;
+            case NORMAL:
+                mFullScreenBtn.setImageResource(R.drawable.ic_fullscreen);
                 break;
         }
-        mVideoPlayButton.setImageResource(resId);
-    }
-
-    public void setVideoPlayState(VideoPlayState videoPlayState) {
-
-        mVideoPlayState = videoPlayState;
     }
 }
 

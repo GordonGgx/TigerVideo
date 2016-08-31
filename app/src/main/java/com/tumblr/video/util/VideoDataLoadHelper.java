@@ -4,6 +4,7 @@ import com.tumblr.video.bean.VideoData;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,29 +16,31 @@ import java.io.InputStreamReader;
  * @site: http://ittiger.cn
  */
 public class VideoDataLoadHelper {
+    private static final String TAG = "VideoDataLoadHelper";
     private static final String VIDEO_FILE_NAME = "tumblr.txt";
 
-    public static void loadAssertVideoData(final Runnable runnable) {
+    public static void loadAssertVideoData(final Callback callback) {
 
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
             @Override
-            protected Void doInBackground(Void... params) {
+            protected Boolean doInBackground(Void... params) {
 
                 try {
                     InputStream is = ApplicationHelper.getInstance().getApplication().getAssets().open(VIDEO_FILE_NAME);
                     loadVideoData(is);
+                    return true;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "load video data failure", e);
+                    return false;
                 }
-                return null;
             }
 
             @Override
-            protected void onPostExecute(Void aVoid) {
+            protected void onPostExecute(Boolean isSuccess) {
 
-                super.onPostExecute(aVoid);
-                if(runnable != null) {
-                    runnable.run();
+                super.onPostExecute(isSuccess);
+                if(callback != null) {
+                    callback.callback(isSuccess);
                 }
             }
         };

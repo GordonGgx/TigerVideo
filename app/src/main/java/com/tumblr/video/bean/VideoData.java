@@ -14,6 +14,10 @@ public class VideoData {
     private long id;
     private String url;
 
+    public VideoData() {
+
+    }
+
     public VideoData(String url) {
 
         this.url = url;

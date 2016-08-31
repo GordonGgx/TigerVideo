@@ -9,6 +9,12 @@
         android:layout_height="match_parent"
         android:background="@android:color/black">
 
+        <ImageView
+            android:id="@+id/iv_video_play_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
         <ProgressBar
             android:id="@+id/video_loading"
             android:layout_width="wrap_content"
@@ -16,13 +22,11 @@
             android:layout_centerInParent="true"
             android:visibility="gone"/>
 
-        <cn.ittiger.demo.ui.video.VideoPlayerControllerView
+        <com.tumblr.video.ui.video.VideoPlayerControllerView
             android:id="@+id/videoControllerView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/video_controller_height"
             android:layout_alignParentBottom="true"
-            android:visibility="gone">
-
-        </cn.ittiger.demo.ui.video.VideoPlayerControllerView>
+            android:visibility="gone"/>
     </RelativeLayout>
 </merge>

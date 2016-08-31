@@ -3,6 +3,7 @@ package com.tumblr.video.base;
 import com.tumblr.video.R;
 import com.tumblr.video.util.PageLoadingHelper;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected PageLoadingHelper mPageLoadingHelper;
     protected boolean mIsInitRefresh = true;
     protected Toolbar mToolbar;
+    protected Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +28,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         view.addView(getContentView(savedInstanceState), 2);
 
         setContentView(view);
+        mContext = this;
 
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        if(isNavigationButtonEnable()) {
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+                @Override
+                public void onClick(View v) {
+
+                    if(isNavigationButtonEnable()) {
+                        onBackPressed();
+                    }
+                }
+            });
+        } else {
+            getSupportActionBar().setHomeButtonEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
         mPageLoadingHelper = new PageLoadingHelper(view);
         mPageLoadingHelper.setOnLoadingClickListener(new View.OnClickListener() {
@@ -49,6 +60,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         if(mIsInitRefresh) {
             clickToRefresh();
         }
+    }
+
+    public boolean isNavigationButtonEnable() {
+
+        return true;
     }
 
     /**

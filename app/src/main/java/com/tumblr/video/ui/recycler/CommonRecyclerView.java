@@ -145,6 +145,28 @@ public class CommonRecyclerView extends RecyclerView {
     }
 
     /**
+     * 获取第一个显示的位置
+     *
+     * @return
+     */
+    public int getFirstVisiblePosition() {
+
+        int position;
+        if (getLayoutManager() instanceof LinearLayoutManager) {
+            position = ((LinearLayoutManager) getLayoutManager()).findFirstVisibleItemPosition();
+        } else if (getLayoutManager() instanceof GridLayoutManager) {
+            position = ((GridLayoutManager) getLayoutManager()).findFirstVisibleItemPosition();
+        } else if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) getLayoutManager();
+            int[] lastPositions = layoutManager.findFirstVisibleItemPositions(new int[layoutManager.getSpanCount()]);
+            position = getMinPosition(lastPositions);
+        } else {
+            position = 0;
+        }
+        return position;
+    }
+
+    /**
      * 获得最大的位置
      *
      * @param positions
@@ -157,6 +179,15 @@ public class CommonRecyclerView extends RecyclerView {
             maxPosition = Math.max(maxPosition, positions[i]);
         }
         return maxPosition;
+    }
+
+    private int getMinPosition(int[] positions) {
+
+        int minPosition = Integer.MAX_VALUE;
+        for (int i = 0; i < positions.length; i++) {
+            minPosition = Math.min(minPosition, positions[i]);
+        }
+        return minPosition;
     }
 
     /**

@@ -1,6 +1,9 @@
 package com.tumblr.video.ui.video;
 
+import com.tumblr.video.FullScreenPlayVideoActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.ViewGroup;
 
 /**
@@ -38,8 +41,31 @@ public class VideoPlayerHelper {
         mVideoPlayerView.play(videoUrl);
     }
 
+    public void pause() {
+
+        mVideoPlayerView.pause();
+    }
+
+    public void gotoFullScreen(Context context) {
+
+        context.startActivity(new Intent(context, FullScreenPlayVideoActivity.class));
+    }
+
+    public void startFullScreenPlay(ViewGroup parent) {
+
+        ((ViewGroup)mVideoPlayerView.getParent()).removeView(mVideoPlayerView);
+        mVideoPlayerView.setPlayScreenState(PlayScreenState.FULL_SCREEN);
+        parent.addView(mVideoPlayerView);
+        mVideoPlayerView.play();
+    }
+
     public VideoPlayState getVideoPlayState() {
 
         return mVideoPlayerView.getVideoPlayState();
+    }
+
+    public void stop() {
+
+        mVideoPlayerView.onDestroy();
     }
 }
