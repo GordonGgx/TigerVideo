@@ -4,9 +4,10 @@
     <dimen name="d_4">4dp</dimen>
     <dimen name="d_10">10dp</dimen>
     <dimen name="d_30">30dp</dimen>
+    <dimen name="d_40">40dp</dimen>
     <dimen name="d_50">50dp</dimen>
 
 
-    <dimen name="video_controller_height">@dimen/d_50</dimen>
+    <dimen name="video_controller_height">@dimen/d_40</dimen>
     <dimen name="video_item_height">202dp</dimen>
 </resources>

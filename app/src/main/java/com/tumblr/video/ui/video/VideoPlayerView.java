@@ -2,6 +2,7 @@ package com.tumblr.video.ui.video;
 
 import com.tumblr.video.R;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
@@ -39,6 +40,7 @@ public class VideoPlayerView extends RelativeLayout
     private String mVideoUrl = "/storage/emulated/0/download/1461625479791.mp4";
     private int mSecProgress = 0;
     private GestureDetector mGestureDetector;
+    private ExitFullScreenListener mExitFullScreenListener;
 
     public VideoPlayerView(Context context) {
 
@@ -67,8 +69,14 @@ public class VideoPlayerView extends RelativeLayout
         mGestureDetector = new GestureDetector(context, mOnGestureListener);
 
         mVideoPlayerControllerView.setVideoControlListener(mVideoControlListener);
+        mVideoPlayButton.setOnClickListener(this);
+    }
 
-        setOnClickListener(this);
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        mGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     /**
@@ -103,7 +111,7 @@ public class VideoPlayerView extends RelativeLayout
 
         int id = v.getId();
         switch (id) {
-            case R.id.iv_video_item_play_btn:
+            case R.id.iv_video_play_btn:
                 playButtonClick();
                 break;
             case R.id.id_video_texture_view:
@@ -121,6 +129,11 @@ public class VideoPlayerView extends RelativeLayout
             case PAUSE:
                 play();
                 break;
+            case FINISH:
+                mPlayer.seekTo(0);
+                updatePlayProgress();
+                play();
+                break;
         }
     }
 
@@ -132,6 +145,7 @@ public class VideoPlayerView extends RelativeLayout
     public void play(String videoUrl) {
 
         mVideoUrl = videoUrl;
+//        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
         createMediaPlayer();
         setVideoPlayState(VideoPlayState.LOADING);
     }
@@ -159,40 +173,9 @@ public class VideoPlayerView extends RelativeLayout
 
     public void finish() {
 
-        mPlayer.pause();
         mPlayer.seekTo(mPlayer.getDuration());
+        mPlayer.pause();
         setVideoPlayState(VideoPlayState.FINISH);
-    }
-
-    private void setVideoPlayState(VideoPlayState state) {
-        mVideoPlayState = state;
-        switch (state) {
-            case STOP:
-                hideLoadingBarIfNeed();
-                updatePlayButtonIcon();//更新播放按钮的图标
-                hidePlayButtonIfNeed();
-                setPlayScreenState(PlayScreenState.NORMAL);
-                break;
-            case LOADING:
-                showLoadingBarIfNeed();
-                break;
-            case PAUSE:
-                updatePlayButtonIcon();//更新播放按钮的图标
-                break;
-            case PLAY:
-                showControllerViewIfNeed();
-                updatePlayProgress();
-                hideLoadingBarIfNeed();
-                hidePlayButtonIfNeed();
-                updatePlayButtonIcon();//更新播放按钮的图标
-                break;
-            case FINISH:
-                showControllerViewIfNeed();
-                updatePlayProgress();
-                mVideoPlayerControllerView.show();
-                updatePlayButtonIcon();//更新播放按钮的图标
-                break;
-        }
     }
 
     /**
@@ -217,8 +200,11 @@ public class VideoPlayerView extends RelativeLayout
 
         try {
             mPlayer.setSurface(mSurface);
-            mPlayer.setDataSource(videoUrl);
-            mPlayer.prepareAsync();
+            if(mVideoPlayState == VideoPlayState.STOP ||
+                mVideoPlayState == VideoPlayState.LOADING) {
+                mPlayer.setDataSource(videoUrl);
+                mPlayer.prepareAsync();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -275,6 +261,7 @@ public class VideoPlayerView extends RelativeLayout
                 String message = "播放失败";
 
                 Log.e("mErrorListener", message);
+                onDestroy();
             }
             return true;
         }
@@ -316,6 +303,9 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void exitFullScreen() {
 
+            if(mExitFullScreenListener != null) {
+                mExitFullScreenListener.exitFullScreen();
+            }
         }
 
         @Override
@@ -327,7 +317,9 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onControllerHide() {
 
-            hidePlayButtonIfNeed();
+            if(mVideoPlayState != VideoPlayState.PAUSE) {
+                hidePlayButtonIfNeed();
+            }
         }
     };
 
@@ -404,6 +396,38 @@ public class VideoPlayerView extends RelativeLayout
         }
     }
 
+    private void setVideoPlayState(VideoPlayState state) {
+        mVideoPlayState = state;
+        switch (state) {
+            case STOP:
+                hideLoadingBarIfNeed();
+                updatePlayButtonIcon();//更新播放按钮的图标
+                hidePlayButtonIfNeed();
+                setPlayScreenState(PlayScreenState.NORMAL);
+                break;
+            case LOADING:
+                showLoadingBarIfNeed();
+                break;
+            case PAUSE:
+                showPlayButtonIfNeed();
+                updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+            case PLAY:
+                showControllerViewIfNeed();
+                updatePlayProgress();
+                hideLoadingBarIfNeed();
+                hidePlayButtonIfNeed();
+                updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+            case FINISH:
+                showControllerViewIfNeed();
+                updatePlayProgress();
+                mVideoPlayerControllerView.show();
+                updatePlayButtonIcon();//更新播放按钮的图标
+                break;
+        }
+    }
+
     /**
      * 更新播放按钮的图标
      */
@@ -444,15 +468,24 @@ public class VideoPlayerView extends RelativeLayout
 
     }
 
+    public interface ExitFullScreenListener {
+
+        void exitFullScreen();
+    }
+
+    public void setExitFullScreenListener(ExitFullScreenListener exitFullScreenListener) {
+
+        mExitFullScreenListener = exitFullScreenListener;
+    }
+
     /**------------- 手势 --------------**/
     private GestureDetector.SimpleOnGestureListener mOnGestureListener =
             new GestureDetector.SimpleOnGestureListener() {
 
                 @Override
-                public boolean onDown(MotionEvent e) {
+                public boolean onSingleTapUp(MotionEvent e) {
 
-                    mVideoPlayerControllerView.showOrHide();
-                    return super.onDown(e);
+                    return super.onSingleTapUp(e);
                 }
             };
 }

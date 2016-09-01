@@ -14,6 +14,7 @@ public class VideoPlayerHelper {
 
     private static volatile  VideoPlayerHelper sVideoPlayerHelper;
     private VideoPlayerView mVideoPlayerView;
+    private ViewGroup mParent;//全屏前正在播放视频的ListItem
 
     private VideoPlayerHelper(Context context) {
 
@@ -46,17 +47,36 @@ public class VideoPlayerHelper {
         mVideoPlayerView.pause();
     }
 
+    public void play() {
+
+        mVideoPlayerView.play();
+    }
+
     public void gotoFullScreen(Context context) {
 
         context.startActivity(new Intent(context, FullScreenPlayVideoActivity.class));
     }
 
-    public void startFullScreenPlay(ViewGroup parent) {
+    public void fullScreen(ViewGroup parent, VideoPlayerView.ExitFullScreenListener exitFullScreenListener) {
 
-        ((ViewGroup)mVideoPlayerView.getParent()).removeView(mVideoPlayerView);
+        mParent = (ViewGroup)mVideoPlayerView.getParent();
+        mParent.removeView(mVideoPlayerView);
         mVideoPlayerView.setPlayScreenState(PlayScreenState.FULL_SCREEN);
+        mVideoPlayerView.setExitFullScreenListener(exitFullScreenListener);
         parent.addView(mVideoPlayerView);
         mVideoPlayerView.play();
+    }
+
+    public void exitFullScreen(VideoPlayState state) {
+
+        mVideoPlayerView.setPlayScreenState(PlayScreenState.NORMAL);
+        ((ViewGroup)mVideoPlayerView.getParent()).removeView(mVideoPlayerView);
+        mVideoPlayerView.setExitFullScreenListener(null);
+        mParent.addView(mVideoPlayerView);
+        mParent = null;
+        if(state == VideoPlayState.PLAY) {
+            mVideoPlayerView.play();
+        }
     }
 
     public VideoPlayState getVideoPlayState() {

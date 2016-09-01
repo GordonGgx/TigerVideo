@@ -62,11 +62,11 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-                int playingPosition = mVideoAdapter.getPlayingPostion();
+                int playingPosition = mVideoAdapter.getPlayingPosition();
                 if(playingPosition != -1 && (playingPosition < mRecyclerView.getFirstVisiblePosition() ||
                     playingPosition > mRecyclerView.getLastVisiblePosition())) {
                     VideoPlayerHelper.getInstance(mContext).stop();
-                    mVideoAdapter.setPlayingPostion(-1);
+                    mVideoAdapter.setPlayingPosition(-1);
                 }
                 super.onScrolled(recyclerView, dx, dy);
             }

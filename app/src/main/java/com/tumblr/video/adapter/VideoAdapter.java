@@ -23,7 +23,7 @@ import java.util.List;
 public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
 
     private Context mContext;
-    private int mPlayingPostion = -1;//当前正在播放的视频索引
+    private int mPlayingPosition = -1;//当前正在播放的视频索引
 
     public VideoAdapter(Context context, List<VideoData> list) {
 
@@ -91,7 +91,7 @@ public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
         public void onClick(View v) {
 
             VideoPlayerHelper.getInstance(mContext).play((ViewGroup) itemView, getItem(mPosition).getUrl());
-            mPlayingPostion = mPosition;
+            mPlayingPosition = mPosition;
         }
 
         public void setPosition(int position) {
@@ -100,13 +100,13 @@ public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
         }
     }
 
-    public int getPlayingPostion() {
+    public int getPlayingPosition() {
 
-        return mPlayingPostion;
+        return mPlayingPosition;
     }
 
-    public void setPlayingPostion(int playingPostion) {
+    public void setPlayingPosition(int playingPosition) {
 
-        mPlayingPostion = playingPostion;
+        mPlayingPosition = playingPosition;
     }
 }
