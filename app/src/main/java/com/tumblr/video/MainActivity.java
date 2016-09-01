@@ -1,6 +1,7 @@
 package com.tumblr.video;
 
 import com.tumblr.video.adapter.VideoAdapter;
+import com.tumblr.video.app.TumblrApplication;
 import com.tumblr.video.base.BaseActivity;
 import com.tumblr.video.bean.VideoData;
 import com.tumblr.video.inject.InjectHelper;
@@ -158,6 +159,14 @@ public class MainActivity extends BaseActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        ((TumblrApplication)getApplication()).onDestroy();
+        VideoPlayerHelper.getInstance(mContext).stop();
     }
 
     private long exitTime = 0;

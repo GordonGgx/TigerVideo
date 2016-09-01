@@ -40,7 +40,7 @@ public class TumblrApplication extends Application implements IDbApplication {
         return mDBConfig;
     }
 
-    public void onDestory() {
+    public void onDestroy() {
 
         ApplicationHelper.getInstance().onDestory();
         this.mDBConfig = null;
