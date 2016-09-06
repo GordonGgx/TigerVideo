@@ -117,11 +117,6 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
         mCacheProgressBar.setSecondaryProgress(progress);
     }
 
-    public boolean isShown() {
-
-        return mControllerBar.getVisibility() == VISIBLE;
-    }
-
     public void showOrHide() {
 
         if (mControllerBar.getVisibility() == View.VISIBLE) {
@@ -132,41 +127,45 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
         }
     }
 
-    private void hide() {
+    public void hide() {
 
         mControllerBar.removeCallbacks(mHideRunnable);
         mControllerBar.clearAnimation();
-        Animation animation = AnimationUtils.loadAnimation(getContext(),
-                R.anim.option_leave_from_bottom);
-        animation.setAnimationListener(new AnimationImp() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
+        if(mControllerBar.isShown()) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(),
+                    R.anim.option_leave_from_bottom);
+            animation.setAnimationListener(new AnimationImp() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
 
-                super.onAnimationEnd(animation);
-                mControllerBar.setVisibility(View.GONE);
-                mCacheProgressBar.setVisibility(VISIBLE);
-                mControlListener.onControllerHide();
-            }
-        });
-        mControllerBar.startAnimation(animation);
+                    super.onAnimationEnd(animation);
+                    mControllerBar.setVisibility(View.GONE);
+                    mCacheProgressBar.setVisibility(VISIBLE);
+                    mControlListener.onControllerHide();
+                }
+            });
+            mControllerBar.startAnimation(animation);
+        }
     }
 
     public void show() {
 
         mControllerBar.clearAnimation();
-        Animation animation = AnimationUtils.loadAnimation(getContext(),
-                R.anim.option_entry_from_bottom);
-        animation.setAnimationListener(new AnimationImp() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
+        if(!mControllerBar.isShown()) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(),
+                    R.anim.option_entry_from_bottom);
+            animation.setAnimationListener(new AnimationImp() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
 
-                super.onAnimationEnd(animation);
-                mControllerBar.setVisibility(View.VISIBLE);
-                mCacheProgressBar.setVisibility(GONE);
-                mControlListener.onControllerShow();
-            }
-        });
-        mControllerBar.startAnimation(animation);
+                    super.onAnimationEnd(animation);
+                    mControllerBar.setVisibility(View.VISIBLE);
+                    mCacheProgressBar.setVisibility(GONE);
+                    mControlListener.onControllerShow();
+                }
+            });
+            mControllerBar.startAnimation(animation);
+        }
         mControllerBar.removeCallbacks(mHideRunnable);
     }
 
@@ -260,6 +259,11 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
                 mFullScreenBtn.setImageResource(R.drawable.ic_fullscreen);
                 break;
         }
+    }
+
+    public boolean isFullScreenPlay() {
+
+        return mFullScreenState == PlayScreenState.FULL_SCREEN;
     }
 }
 

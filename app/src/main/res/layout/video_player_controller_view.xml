@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/video_cache_progress"
-        android:background="#B2000000"
+        android:background="@color/common_black_color_alpha_70"
         android:visibility="gone">
 
         <ImageView
@@ -23,7 +23,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/d_10"
             android:layout_toLeftOf="@+id/full_screen_btn">
 
             <SeekBar
@@ -32,8 +31,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:max="100"
-                android:maxHeight="@dimen/d_4"
-                android:minHeight="@dimen/d_4"
+                android:maxHeight="@dimen/d_3"
+                android:minHeight="@dimen/d_3"
                 android:progress="0"
                 android:progressDrawable="@drawable/video_seekbar_style"
                 android:thumb="@drawable/video_seekbar_icon"/>
@@ -73,8 +72,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:max="100"
-        android:maxHeight="@dimen/d_4"
-        android:minHeight="@dimen/d_4"
+        android:maxHeight="@dimen/d_2"
+        android:minHeight="@dimen/d_2"
         android:progress="0"
         android:progressDrawable="@drawable/video_seekbar_style"/>
 

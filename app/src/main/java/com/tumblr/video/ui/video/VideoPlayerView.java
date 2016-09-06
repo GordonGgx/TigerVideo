@@ -14,10 +14,14 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -39,8 +43,20 @@ public class VideoPlayerView extends RelativeLayout
     private MediaPlayer mPlayer;
     private String mVideoUrl = "/storage/emulated/0/download/1461625479791.mp4";
     private int mSecProgress = 0;
-    private GestureDetector mGestureDetector;
     private ExitFullScreenListener mExitFullScreenListener;
+
+    //滑动调节音量相关视图
+    private LinearLayout mVideoVolumeView;
+    private ProgressBar mVideoVolumeProgress;
+    //滑动调节亮度相关视图
+    private LinearLayout mVideoBrightnessView;
+    private ProgressBar mVideoBrightnessProgress;
+    //滑动快进快退相关视图
+    private View mVideoChangeProgressView;
+    private ImageView mVideoChangeProgressIcon;
+    private TextView mVideoChangeProgressCurrPro;
+    private TextView mVideoChangeProgressTotal;
+    private ProgressBar mVideoChangeProgressBar;
 
     public VideoPlayerView(Context context) {
 
@@ -66,17 +82,18 @@ public class VideoPlayerView extends RelativeLayout
         mProgressBar = (ProgressBar) findViewById(R.id.video_loading);
         mVideoPlayButton = (ImageView) findViewById(R.id.iv_video_play_btn);
 
-        mGestureDetector = new GestureDetector(context, mOnGestureListener);
+        mVideoVolumeView = (LinearLayout) findViewById(R.id.video_volume);
+        mVideoBrightnessView = (LinearLayout) findViewById(R.id.video_brightness);
+        mVideoVolumeProgress = (ProgressBar) findViewById(R.id.video_volume_progressbar);
+        mVideoBrightnessProgress = (ProgressBar) findViewById(R.id.video_brightness_progressbar);
+        mVideoChangeProgressView = findViewById(R.id.video_change_progress_view);
+        mVideoChangeProgressIcon = (ImageView) findViewById(R.id.video_change_progress_icon);
+        mVideoChangeProgressCurrPro = (TextView) findViewById(R.id.video_change_progress_current);
+        mVideoChangeProgressTotal = (TextView) findViewById(R.id.video_change_progress_total);
+        mVideoChangeProgressBar = (ProgressBar) findViewById(R.id.video_change_progress_bar);
 
         mVideoPlayerControllerView.setVideoControlListener(mVideoControlListener);
         mVideoPlayButton.setOnClickListener(this);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-
-        mGestureDetector.onTouchEvent(ev);
-        return super.dispatchTouchEvent(ev);
     }
 
     /**
@@ -99,6 +116,7 @@ public class VideoPlayerView extends RelativeLayout
             mTextureView.setId(R.id.id_video_texture_view);
             mTextureView.setOnClickListener(this);
             mTextureView.setSurfaceTextureListener(this);
+            mTextureView.setOnTouchListener(new VideoOnTouchListener());
             LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             params.addRule(RelativeLayout.CENTER_IN_PARENT);
             mTextureView.setLayoutParams(params);
@@ -145,7 +163,7 @@ public class VideoPlayerView extends RelativeLayout
     public void play(String videoUrl) {
 
         mVideoUrl = videoUrl;
-//        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
+        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
         createMediaPlayer();
         setVideoPlayState(VideoPlayState.LOADING);
     }
@@ -311,13 +329,19 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onControllerShow() {
 
-            showPlayButtonIfNeed();
+            if(isFullScreen() && mVideoChangeProgressView.isShown()) {
+                //当全屏进行手势操作时不显示播放暂停按钮
+                hidePlayButtonIfNeed();
+            } else {
+                showPlayButtonIfNeed();
+            }
         }
 
         @Override
         public void onControllerHide() {
 
-            if(mVideoPlayState != VideoPlayState.PAUSE) {
+            if(mVideoPlayState == VideoPlayState.PLAY) {
+                //播放状态下，底部控制器隐藏时同时隐藏播放器上的暂停按钮
                 hidePlayButtonIfNeed();
             }
         }
@@ -343,6 +367,11 @@ public class VideoPlayerView extends RelativeLayout
     public VideoPlayState getVideoPlayState() {
 
         return mVideoPlayState;
+    }
+
+    private boolean isFullScreen() {
+
+        return mVideoPlayerControllerView.isFullScreenPlay();
     }
 
     /**---------------- 界面UI控制 ----------------------**/
@@ -411,6 +440,7 @@ public class VideoPlayerView extends RelativeLayout
             case PAUSE:
                 showPlayButtonIfNeed();
                 updatePlayButtonIcon();//更新播放按钮的图标
+                mVideoPlayerControllerView.show();
                 break;
             case PLAY:
                 showControllerViewIfNeed();
@@ -436,12 +466,20 @@ public class VideoPlayerView extends RelativeLayout
         int resId = R.drawable.ic_play;
         switch (mVideoPlayState) {
             case PLAY:
-                resId = R.drawable.ic_pause;
+                if(isFullScreen()) {
+                    resId = R.drawable.ic_pause_fullscreen;
+                } else {
+                    resId = R.drawable.ic_pause;
+                }
                 break;
             case STOP:
             case PAUSE:
             case FINISH:
-                resId = R.drawable.ic_play;
+                if(isFullScreen()) {
+                    resId = R.drawable.ic_play_fullscreen;
+                } else {
+                    resId = R.drawable.ic_play;
+                }
                 break;
         }
         mVideoPlayButton.setImageResource(resId);
@@ -478,14 +516,238 @@ public class VideoPlayerView extends RelativeLayout
         mExitFullScreenListener = exitFullScreenListener;
     }
 
-    /**------------- 手势 --------------**/
-    private GestureDetector.SimpleOnGestureListener mOnGestureListener =
-            new GestureDetector.SimpleOnGestureListener() {
+    /**------------- 全屏播放手势操作相关 --------------**/
+    private class VideoOnTouchListener implements OnTouchListener {
 
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
+        private static final int TOTAL_PERCENT = 100;
+        private static final int ONE_SECOND = 1000;
+        private static final int VOLUME_STEP = 1;
+        private static final float BRIGHTNESS_STEP = 0.08f;
+        private static final float MAX_BRIGHTNESS = 1.0f;
+        private int mTouchSlop = 0;
+        private int mWidth = 0;
+        private int mHeight = 0;
+        private AudioManager mAudioManager;
+        private int mMaxVolume;//最大音量
+        private float mVolumeDistance = 0;//调节音量滑动的距离阀值
+        private float mBrightnessDistance = 0;//调节亮度滑动的距离阀值
 
-                    return super.onSingleTapUp(e);
+        private VideoOnTouchListener() {
+            mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+            mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+            mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            mVideoVolumeProgress.setProgress((int)(volume * 1.0 / mMaxVolume * TOTAL_PERCENT + 0.5f));
+
+            //获取当前屏幕亮度,获取失败则返回255
+            int currLight = android.provider.Settings.System.getInt(getContext().getContentResolver(),
+                    android.provider.Settings.System.SCREEN_BRIGHTNESS,
+                    255);
+            float screenLight = currLight / 255f;
+
+            WindowManager.LayoutParams window = ((Activity)getContext()).getWindow().getAttributes();
+            window.screenBrightness = screenLight;
+            mVideoBrightnessProgress.setProgress((int)(screenLight * TOTAL_PERCENT));
+        }
+
+        private boolean isFlingRight(float downX, float downY, MotionEvent e2) {
+
+            return (e2.getRawX() - downX > mTouchSlop)
+                    && (Math.abs(e2.getRawY() - downY) < mTouchSlop);
+        }
+
+        private boolean isFlingLeft(float downX, float downY, MotionEvent e2) {
+
+            return (downX - e2.getRawX() > mTouchSlop)
+                    && (Math.abs(e2.getRawY() - downY) < mTouchSlop);
+        }
+
+        private boolean isScrollVertical(float downX, float downY, MotionEvent e2) {
+
+            return (Math.abs(e2.getRawX() - downX) < mTouchSlop)
+                    && (Math.abs(e2.getRawY() - downY) > mTouchSlop);
+        }
+
+        private boolean isScrollVerticalRight(float downX, MotionEvent e2) {
+
+            return downX > mWidth / 2 && e2.getRawX() > mWidth / 2;
+        }
+
+        private boolean isScrollVerticalLeft(float downX, MotionEvent e2) {
+
+            return downX < mWidth / 2 && e2.getRawX() < mWidth / 2;
+        }
+
+        float mDownX, mDownY;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(!isFullScreen()) {
+                return false;
+            }
+            if(mWidth == 0) {
+                mWidth = ((Activity)getContext()).getWindowManager().getDefaultDisplay().getWidth();
+                mHeight = ((Activity)getContext()).getWindowManager().getDefaultDisplay().getHeight();
+                mVolumeDistance = mHeight / 3.0f / mMaxVolume;
+                mBrightnessDistance = mHeight / 3.0f / (MAX_BRIGHTNESS / BRIGHTNESS_STEP);
+            }
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mDownX = event.getRawX();
+                    mDownY = event.getRawY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if(isFlingLeft(mDownX, mDownY, event)) {//向左滑，退后
+                        videoSeek(false);
+                        mDownX = event.getRawX();
+                        mDownY = event.getRawY();
+                    } else if(isFlingRight(mDownX, mDownY, event)) {//向右滑，快进
+                        videoSeek(true);
+                        mDownX = event.getRawX();
+                        mDownY = event.getRawY();
+                    } else if(isScrollVertical(mDownX, mDownY, event)) {//垂直方向滑
+                        if(isScrollVerticalRight(mDownX, event)) {//屏幕右边上下滑
+                            if(Math.abs(event.getRawY() - mDownY) >= mVolumeDistance) {
+                                changeVideoVolume(event.getRawY() < mDownY);
+                                mDownX = event.getRawX();
+                                mDownY = event.getRawY();
+                            }
+                        } else if(isScrollVerticalLeft(mDownX, event)) {//屏幕左边上下滑
+                            if(Math.abs(event.getRawY() - mDownY) >= mBrightnessDistance) {
+                                changeBrightness(event.getRawY() < mDownY);
+                                mDownX = event.getRawX();
+                                mDownY = event.getRawY();
+                            }
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return false;
+        }
+
+        /**
+         * 调整视频音量大小
+         *
+         * @param isTurnUp    是否调大音量
+         */
+        private void changeVideoVolume(boolean isTurnUp) {
+
+            if(mVideoPlayState != VideoPlayState.PLAY &&
+                    mVideoPlayState != VideoPlayState.PAUSE) {//进入播放
+                return;
+            }
+            removeCallbacks(mVolumeRunnable);
+            if(mVideoVolumeView.getVisibility() == GONE) {
+                mVideoVolumeView.setVisibility(VISIBLE);
+            }
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(isTurnUp) {
+                volume = volume + VOLUME_STEP >= mMaxVolume ? mMaxVolume : volume + VOLUME_STEP;
+            } else {
+                volume = volume - VOLUME_STEP > 0 ? volume - VOLUME_STEP : 0;
+            }
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            mVideoVolumeProgress.setProgress((int)(volume * 1.0 / mMaxVolume * TOTAL_PERCENT + 0.5f));
+            postDelayed(mVolumeRunnable, ONE_SECOND);
+        }
+
+        Runnable mVolumeRunnable = new Runnable() {
+            @Override
+            public void run() {
+
+                mVideoVolumeView.setVisibility(GONE);
+            }
+        };
+
+        /**
+         * 调整屏幕亮度
+         *
+         * @param isDodge  是否调亮
+         */
+        private void changeBrightness(boolean isDodge) {
+
+            if(mVideoPlayState != VideoPlayState.PLAY &&
+                    mVideoPlayState != VideoPlayState.PAUSE) {//进入播放
+                return;
+            }
+            removeCallbacks(mBrightnessRunnable);
+            if(mVideoBrightnessView.getVisibility() == GONE) {
+                mVideoBrightnessView.setVisibility(VISIBLE);
+            }
+            WindowManager.LayoutParams mWindowAttr = ((Activity)getContext()).getWindow().getAttributes();
+            float brightness = mWindowAttr.screenBrightness;
+            if(isDodge) {
+                brightness = brightness < MAX_BRIGHTNESS ? brightness + BRIGHTNESS_STEP : MAX_BRIGHTNESS;
+            } else {
+                brightness = brightness > 0f ? brightness - BRIGHTNESS_STEP : 0f;
+            }
+            //只会改变当前屏幕的亮度
+            mWindowAttr.screenBrightness = brightness;
+            ((Activity)getContext()).getWindow().setAttributes(mWindowAttr);
+            mVideoBrightnessProgress.setProgress((int)(brightness * TOTAL_PERCENT));
+            postDelayed(mBrightnessRunnable, ONE_SECOND);
+        }
+
+        Runnable mBrightnessRunnable = new Runnable() {
+            @Override
+            public void run() {
+
+                mVideoBrightnessView.setVisibility(GONE);
+            }
+        };
+
+        /**
+         * 视频前进后退
+         * @param isForward
+         */
+        private void videoSeek(boolean isForward) {
+
+            if(mVideoPlayState != VideoPlayState.PLAY &&
+                    mVideoPlayState != VideoPlayState.PAUSE) {//进入播放
+                return;
+            }
+            try {
+                if(mPlayer != null) {
+                    if(mVideoChangeProgressView.getVisibility() == GONE) {
+                        mVideoPlayerControllerView.show();
+                        mVideoChangeProgressView.setVisibility(VISIBLE);
+                    }
+                    removeCallbacks(mVideoSeekRunnable);
+                    int duration = mPlayer.getDuration();//总时长
+                    int step = ONE_SECOND;//每次前进后退1秒
+                    int current = mPlayer.getCurrentPosition();//当前播放时长
+                    if(isForward) {//前进
+                        mVideoChangeProgressIcon.setImageResource(R.drawable.ic_fast_forward);
+                        current = current + step >= duration ? duration : current + step;
+                    } else {
+                        mVideoChangeProgressIcon.setImageResource(R.drawable.ic_fast_back);
+                        current = current - step <= 0 ? 0 : current - step;
+                    }
+                    mPlayer.seekTo(current);
+                    updatePlayProgress();
+                    mVideoChangeProgressCurrPro.setText(mVideoPlayerControllerView.
+                            formatVideoTimeLength((int) (current / ONE_SECOND + 0.5f)));
+                    mVideoChangeProgressTotal.setText("/" + mVideoPlayerControllerView.
+                            formatVideoTimeLength((int) (duration / ONE_SECOND + 0.5f)));
+                    mVideoChangeProgressBar.setProgress((int) (current * 1.0f / duration * TOTAL_PERCENT + 0.5f));
+                    postDelayed(mVideoSeekRunnable, ONE_SECOND);
                 }
-            };
+            } catch(Exception e) {
+                Log.d(TAG, "video forward and backward error", e);
+            }
+        }
+
+        Runnable mVideoSeekRunnable = new Runnable() {
+            @Override
+            public void run() {
+
+                mVideoChangeProgressView.setVisibility(GONE);
+                mVideoPlayerControllerView.hide();
+            }
+        };
+    }
 }
