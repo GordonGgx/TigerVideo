@@ -41,7 +41,9 @@ public class VideoPlayerView extends RelativeLayout
 
     private Surface mSurface = null;
     private MediaPlayer mPlayer;
-    private String mVideoUrl = "/storage/emulated/0/download/1461625479791.mp4";
+    //mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
+    ///storage/emulated/0/download/1461625479791.mp4
+    private String mVideoUrl = "";
     private int mSecProgress = 0;
     private ExitFullScreenListener mExitFullScreenListener;
 
@@ -163,7 +165,6 @@ public class VideoPlayerView extends RelativeLayout
     public void play(String videoUrl) {
 
         mVideoUrl = videoUrl;
-        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
         createMediaPlayer();
         setVideoPlayState(VideoPlayState.LOADING);
     }
