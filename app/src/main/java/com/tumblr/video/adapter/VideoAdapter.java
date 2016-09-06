@@ -7,12 +7,15 @@ import com.tumblr.video.ui.recycler.ViewHolder;
 import com.tumblr.video.ui.video.VideoPlayState;
 import com.tumblr.video.ui.video.VideoPlayerHelper;
 import com.tumblr.video.ui.video.VideoPlayerView;
+import com.tumblr.video.util.DisplayManager;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -81,6 +84,13 @@ public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
         public VideoViewHolder(View itemView) {
 
             super(itemView);
+            //以宽高比16:9的比例设置播放器的尺寸
+            int width = DisplayManager.screenWidthPixel(mContext);
+            int height = (int) (width * 1.0f / 16 * 9 + 0.5f);
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            params.height = height;
+            params.width = width;
+            itemView.setLayoutParams(params);
             mVideoImage = (ImageView) itemView.findViewById(R.id.iv_video_item_image);
             mPlayImage = (ImageView) itemView.findViewById(R.id.iv_video_item_play_btn);
             mVideoImage.setOnClickListener(this);

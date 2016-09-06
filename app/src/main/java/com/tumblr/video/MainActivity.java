@@ -23,6 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -33,6 +35,10 @@ public class MainActivity extends BaseActivity implements
     private SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(id=R.id.video_recycler_view)
     private CommonRecyclerView mRecyclerView;
+    @InjectView(id=R.id.small_video_player_container)
+    private RelativeLayout mSmallVideoPlayerContainer;
+    @InjectView(id=R.id.iv_video_close)
+    private ImageView mVideoClose;
     private VideoAdapter mVideoAdapter;
     private int mCurPage = 1;
     private int mPageSize = 10;
@@ -64,12 +70,19 @@ public class MainActivity extends BaseActivity implements
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 int playingPosition = mVideoAdapter.getPlayingPosition();
-                if(playingPosition != -1 && (playingPosition < mRecyclerView.getFirstVisiblePosition() ||
-                    playingPosition > mRecyclerView.getLastVisiblePosition())) {
+                if (playingPosition != -1 && (playingPosition < mRecyclerView.getFirstVisiblePosition() ||
+                        playingPosition > mRecyclerView.getLastVisiblePosition())) {
                     VideoPlayerHelper.getInstance(mContext).stop();
                     mVideoAdapter.setPlayingPosition(-1);
                 }
                 super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+        mVideoClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                VideoPlayerHelper.getInstance(mContext).stop();
             }
         });
         return view;
