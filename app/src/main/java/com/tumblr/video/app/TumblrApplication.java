@@ -2,6 +2,7 @@ package com.tumblr.video.app;
 
 import cn.ittiger.database.SQLiteDBConfig;
 
+import com.tumblr.video.R;
 import com.tumblr.video.util.ApplicationHelper;
 import com.tumblr.video.util.CrashHandler;
 
@@ -32,8 +33,9 @@ public class TumblrApplication extends Application implements IDbApplication {
             synchronized (TumblrApplication.class) {
                 if(mDBConfig == null) {
                     mDBConfig = new SQLiteDBConfig(getApplicationContext());
+                    mDBConfig.setDbName(getResources().getString(R.string.app_name) + ".db");
                     //本地数据库文件保存在应用文件目录
-                    mDBConfig.setDbDirectoryPath(getApplicationContext().getCacheDir().getAbsolutePath());
+                    mDBConfig.setDbDirectoryPath(getApplicationContext().getExternalCacheDir().getAbsolutePath());
                 }
             }
         }
