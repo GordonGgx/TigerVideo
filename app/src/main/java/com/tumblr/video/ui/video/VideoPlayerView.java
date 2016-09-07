@@ -135,7 +135,9 @@ public class VideoPlayerView extends RelativeLayout
                 playButtonClick();
                 break;
             case R.id.id_video_texture_view:
-                mVideoPlayerControllerView.showOrHide();
+                if(getPlayScreenState() != PlayScreenState.SMALL) {
+                    mVideoPlayerControllerView.showOrHide();
+                }
                 break;
         }
     }
@@ -165,6 +167,7 @@ public class VideoPlayerView extends RelativeLayout
     public void play(String videoUrl) {
 
         mVideoUrl = videoUrl;
+        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
         createMediaPlayer();
         setVideoPlayState(VideoPlayState.LOADING);
     }
@@ -190,6 +193,9 @@ public class VideoPlayerView extends RelativeLayout
         mPlayer.start();
     }
 
+    /**
+     * 播放完成
+     */
     public void finish() {
 
         mPlayer.seekTo(mPlayer.getDuration());
@@ -219,6 +225,9 @@ public class VideoPlayerView extends RelativeLayout
 
         try {
             mPlayer.setSurface(mSurface);
+            if(getPlayScreenState() == PlayScreenState.SMALL) {
+                return;
+            }
             if(mVideoPlayState == VideoPlayState.STOP ||
                 mVideoPlayState == VideoPlayState.LOADING) {
                 mPlayer.setDataSource(videoUrl);
@@ -299,7 +308,12 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onCompletion(MediaPlayer mp) {
 
-            finish();
+            //播放结束
+            if(isFullScreen() && mExitFullScreenListener != null) {//全屏播放结束
+                mExitFullScreenListener.exitFullScreen();
+            } else {
+                finish();
+            }
         }
     };
 
@@ -316,7 +330,7 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void fullScreen() {
 
-            VideoPlayerHelper.getInstance(getContext()).gotoFullScreen(getContext());
+            VideoPlayerHelper.getInstance().gotoFullScreen(getContext());
         }
 
         @Override
@@ -372,7 +386,7 @@ public class VideoPlayerView extends RelativeLayout
 
     private boolean isFullScreen() {
 
-        return mVideoPlayerControllerView.isFullScreenPlay();
+        return mVideoPlayerControllerView.getPlayScreenState() == PlayScreenState.FULL_SCREEN;
     }
 
     /**---------------- 界面UI控制 ----------------------**/
@@ -449,6 +463,7 @@ public class VideoPlayerView extends RelativeLayout
                 hideLoadingBarIfNeed();
                 hidePlayButtonIfNeed();
                 updatePlayButtonIcon();//更新播放按钮的图标
+                mVideoPlayerControllerView.hide();
                 break;
             case FINISH:
                 showControllerViewIfNeed();
@@ -489,6 +504,11 @@ public class VideoPlayerView extends RelativeLayout
     public void setPlayScreenState(PlayScreenState state) {
 
         mVideoPlayerControllerView.setPlayScreenState(state);
+    }
+
+    public PlayScreenState getPlayScreenState() {
+
+        return mVideoPlayerControllerView.getPlayScreenState();
     }
 
     @Override

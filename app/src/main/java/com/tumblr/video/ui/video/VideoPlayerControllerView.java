@@ -261,9 +261,9 @@ public class VideoPlayerControllerView extends RelativeLayout implements View.On
         }
     }
 
-    public boolean isFullScreenPlay() {
+    public PlayScreenState getPlayScreenState() {
 
-        return mFullScreenState == PlayScreenState.FULL_SCREEN;
+        return mFullScreenState;
     }
 }
 

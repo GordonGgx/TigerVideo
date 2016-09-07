@@ -3,67 +3,58 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/controller_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/video_cache_progress"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:background="@color/common_black_color_alpha_70"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/play_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/d_5"
+            android:gravity="center_vertical"
+            android:text="00:00"
+            android:textColor="@android:color/white"
+            android:textSize="9sp"/>
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_weight="1"
+            android:max="100"
+            android:maxHeight="@dimen/d_3"
+            android:minHeight="@dimen/d_3"
+            android:progress="0"
+            android:progressDrawable="@drawable/video_seekbar_style"
+            android:thumb="@drawable/video_seekbar_icon"/>
+
+        <TextView
+            android:id="@+id/total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="00:00"
+            android:textColor="@android:color/white"
+            android:textSize="9sp"/>
 
         <ImageView
             android:id="@+id/full_screen_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/d_10"
+            android:paddingLeft="@dimen/d_5"
+            android:paddingRight="@dimen/d_5"
             android:src="@drawable/ic_fullscreen"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/full_screen_btn">
-
-            <SeekBar
-                android:id="@+id/seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:max="100"
-                android:maxHeight="@dimen/d_3"
-                android:minHeight="@dimen/d_3"
-                android:progress="0"
-                android:progressDrawable="@drawable/video_seekbar_style"
-                android:thumb="@drawable/video_seekbar_icon"/>
-
-            <TextView
-                android:id="@+id/play_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/seekbar"
-                android:layout_marginLeft="@dimen/d_10"
-                android:layout_marginTop="@dimen/d_2"
-                android:gravity="center_vertical"
-                android:text="00:00"
-                android:textColor="@android:color/white"
-                android:textSize="9sp"/>
-
-            <TextView
-                android:id="@+id/total_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/seekbar"
-                android:layout_marginRight="@dimen/d_10"
-                android:layout_marginTop="@dimen/d_2"
-                android:gravity="center_vertical"
-                android:text="00:00"
-                android:textColor="@android:color/white"
-                android:textSize="9sp"/>
-        </RelativeLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/video_cache_progress"

@@ -6,5 +6,6 @@ package com.tumblr.video.ui.video;
  */
 public enum PlayScreenState {
     FULL_SCREEN,
-    NORMAL
+    NORMAL,
+    SMALL
 }

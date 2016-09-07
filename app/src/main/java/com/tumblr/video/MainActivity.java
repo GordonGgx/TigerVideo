@@ -60,6 +60,7 @@ public class MainActivity extends BaseActivity implements
         });
         setTitle(getString(R.string.app_name));
         mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 
@@ -69,11 +70,14 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-                int playingPosition = mVideoAdapter.getPlayingPosition();
-                if (playingPosition != -1 && (playingPosition < mRecyclerView.getFirstVisiblePosition() ||
-                        playingPosition > mRecyclerView.getLastVisiblePosition())) {
-                    VideoPlayerHelper.getInstance(mContext).stop();
-                    mVideoAdapter.setPlayingPosition(-1);
+                int curPlayPosition = VideoPlayerHelper.getInstance().getCurrPlayPosition();
+                int lastPlayPosition = VideoPlayerHelper.getInstance().getLastPlayPosition();
+                if (curPlayPosition != -1 && (curPlayPosition < mRecyclerView.getFirstVisiblePosition() ||
+                        curPlayPosition > mRecyclerView.getLastVisiblePosition())) {
+                    VideoPlayerHelper.getInstance().smallWindowPlay();//移除屏幕之后进入小窗口播放
+                } else if(curPlayPosition == -1 && lastPlayPosition >= mRecyclerView.getFirstVisiblePosition()
+                    && lastPlayPosition <= mRecyclerView.getLastVisiblePosition()) {
+                    VideoPlayerHelper.getInstance().smallWindowToListPlay();
                 }
                 super.onScrolled(recyclerView, dx, dy);
             }
@@ -82,16 +86,17 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
 
-                VideoPlayerHelper.getInstance(mContext).stop();
+                VideoPlayerHelper.getInstance().stop();
             }
         });
+        VideoPlayerHelper.init(mContext, mSmallVideoPlayerContainer);
         return view;
     }
 
     @Override
     protected void onPause() {
 
-        VideoPlayerHelper.getInstance(mContext).pause();
+        VideoPlayerHelper.getInstance().pause();
         super.onPause();
     }
 
@@ -179,7 +184,7 @@ public class MainActivity extends BaseActivity implements
 
         super.onDestroy();
         ((TumblrApplication)getApplication()).onDestroy();
-        VideoPlayerHelper.getInstance(mContext).stop();
+        VideoPlayerHelper.getInstance().stop();
     }
 
     private long exitTime = 0;

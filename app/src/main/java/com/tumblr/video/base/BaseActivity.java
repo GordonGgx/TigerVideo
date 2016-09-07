@@ -22,13 +22,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        mContext = this;
         ViewGroup view = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.base_activity_layout, null);
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         view.addView(getContentView(savedInstanceState), 2);
 
         setContentView(view);
-        mContext = this;
 
         setSupportActionBar(mToolbar);
         if(isNavigationButtonEnable()) {

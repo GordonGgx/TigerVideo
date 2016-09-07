@@ -17,21 +17,23 @@ public class FullScreenPlayVideoActivity extends AppCompatActivity
             implements VideoPlayerView.ExitFullScreenListener{
 
     private VideoPlayState mCurrPlayState;
+    private ViewGroup mParent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_play_video);
-        VideoPlayerHelper.getInstance(this).fullScreen((ViewGroup) findViewById(R.id.root), this);
+        mParent = (ViewGroup) findViewById(R.id.root);
+        VideoPlayerHelper.getInstance().fullScreen(mParent, this);
     }
 
     @Override
     protected void onPause() {
 
         super.onPause();
-        mCurrPlayState = VideoPlayerHelper.getInstance(this).getVideoPlayState();
-        VideoPlayerHelper.getInstance(this).pause();
+        mCurrPlayState = VideoPlayerHelper.getInstance().getVideoPlayState();
+        VideoPlayerHelper.getInstance().pause();
     }
 
     @Override
@@ -39,15 +41,15 @@ public class FullScreenPlayVideoActivity extends AppCompatActivity
 
         super.onResume();
         if(mCurrPlayState == VideoPlayState.PLAY) {
-            VideoPlayerHelper.getInstance(this).play();
+            VideoPlayerHelper.getInstance().play();
         }
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
 
-        super.onDestroy();
-        VideoPlayerHelper.getInstance(this).exitFullScreen(mCurrPlayState);
+        VideoPlayerHelper.getInstance().exitFullScreen(mCurrPlayState);
+        super.onStop();
     }
 
     @Override

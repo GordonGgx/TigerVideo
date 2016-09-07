@@ -22,7 +22,7 @@ public class TumblrApplication extends Application implements IDbApplication {
 
         super.onCreate();
 
-        CrashHandler.getInstance().init(getApplicationContext());
+//        CrashHandler.getInstance().init(getApplicationContext());
         ApplicationHelper.getInstance().init(this);
     }
 
