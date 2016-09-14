@@ -25,7 +25,7 @@
             android:visibility="gone"/>
 
         <!-- 底部控制进度条 -->
-        <com.tumblr.video.ui.video.VideoPlayerControllerView
+        <cn.ittiger.video.player.VideoPlayerControllerView
             android:id="@+id/videoControllerView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/video_controller_height"

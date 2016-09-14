@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.tumblr.video"
+<manifest package="cn.ittiger.video"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FullScreenPlayVideoActivity"
+            android:name=".player.FullScreenPlayVideoActivity"
             android:screenOrientation="landscape"
             android:theme="@style/FullScreenTheme">
 
