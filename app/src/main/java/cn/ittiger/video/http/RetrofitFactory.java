@@ -7,6 +7,17 @@ import retrofit2.Retrofit;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+http://c.m.163.com/recommend/getChanListNews?channel=T1457068979049&size=20&offset=60
+
+http://lf.snssdk.com/api/news/feed/v43/?category=video&refer=20&count=20&tt_from=tab&device_platform=android&language=zh
+
+http://r.cnews.qq.com/getSubNewsChlidInterest?last_id=20160910V03GWE00&forward=1&bottom_id=20160910V03GWE00&apptype=android&hw=HUAWEI_PLK-AL10&appversion=2.4.0&appver=21_areading_2.4.0&top_id=20140819V005HY00&page=1&direction=0&chlid=kb_video_news
+
+http://r.cnews.qq.com/getSubNewsChlidInterest?last_id=20160901V00Q1700&forward=1&bottom_id=20160910V03GWE00&apptype=android&hw=HUAWEI_PLK-AL10&appversion=2.4.0&appver=21_areading_2.4.0&top_id=20160913V02C9800&page=2&direction=1&chlid=kb_video_news
+
+*/
+
 /**
  * @author laohu
  * @site http://ittiger.cn
