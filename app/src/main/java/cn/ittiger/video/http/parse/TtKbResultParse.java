@@ -1,9 +1,8 @@
 package cn.ittiger.video.http.parse;
 
-import cn.ittiger.database.SQLiteDB;
 import cn.ittiger.video.bean.TtKb;
 import cn.ittiger.video.bean.VideoData;
-import cn.ittiger.video.util.DBManager;
+import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.Utils;
 
 import org.json.JSONArray;
@@ -46,6 +45,7 @@ public class TtKbResultParse implements ResultParse {
         for(int i = 0; i < videos.length(); i++) {
             item = videos.getJSONObject(i);
             VideoData videoData = new VideoData();
+            videoData.setDataType(DataType.TTKB.value());
             videoData.setId(item.optString(KEY_ID));
             videoData.setTitle(item.optString(KEY_TITLE));
             videoData.setVideoUrl(item.optString(KEY_VIDEO_URL));

@@ -1,6 +1,7 @@
 package cn.ittiger.video.http.parse;
 
 import cn.ittiger.video.bean.VideoData;
+import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.Utils;
 
 import org.json.JSONArray;
@@ -27,6 +28,7 @@ public class NetEasyResultParse implements ResultParse {
         for(int i = 0; i < videos.length(); i++) {
             item = videos.getJSONObject(i);
             VideoData videoData = new VideoData();
+            videoData.setDataType(DataType.NET_EASY.value());
             videoData.setId(item.optString("vid"));
             videoData.setImageUrl(item.optString("cover"));
             videoData.setTitle(item.optString("title"));

@@ -6,7 +6,19 @@ package cn.ittiger.video.http;
  */
 public enum DataType {
 
-    NET_EASY,
-    CNEWS,
-    TTKB
+    NET_EASY(1),
+    CNEWS(2),
+    TTKB(3);
+
+    int mValue;
+
+    DataType(int value) {
+
+        mValue = value;
+    }
+
+    public int value() {
+
+        return mValue;
+    }
 }

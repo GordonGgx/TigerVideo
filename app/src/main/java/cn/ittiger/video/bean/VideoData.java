@@ -1,7 +1,9 @@
 package cn.ittiger.video.bean;
 
+import cn.ittiger.database.annotation.NotDBColumn;
 import cn.ittiger.database.annotation.PrimaryKey;
 import cn.ittiger.database.annotation.Table;
+import cn.ittiger.video.http.DataType;
 
 /**
  * @author: laohu on 2016/8/24
@@ -16,6 +18,7 @@ public class VideoData {
     private String title;//视频标题
     private String imageUrl;//视频预览图地址
     private String videoUrl;//视频播放地址
+    private int mDataType;//视频数据类型
 
     public String getId() {
 
@@ -65,5 +68,15 @@ public class VideoData {
     public void setVideoUrl(String videoUrl) {
 
         this.videoUrl = videoUrl;
+    }
+
+    public int getDataType() {
+
+        return mDataType;
+    }
+
+    public void setDataType(int dataType) {
+
+        mDataType = dataType;
     }
 }

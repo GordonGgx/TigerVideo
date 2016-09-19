@@ -1,6 +1,7 @@
 package cn.ittiger.video.http.parse;
 
 import cn.ittiger.video.bean.VideoData;
+import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.Utils;
 
 import org.json.JSONArray;
@@ -35,6 +36,7 @@ public class CNewsResultParse implements ResultParse {
         for(int i = 0; i < videos.length(); i++) {
             item = videos.getJSONObject(i);
             VideoData videoData = new VideoData();
+            videoData.setDataType(DataType.CNEWS.value());
             videoData.setId(item.optString(KEY_ID));
             videoData.setTitle(item.optString(KEY_TITLE));
 
