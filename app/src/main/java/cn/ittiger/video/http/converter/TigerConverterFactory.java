@@ -24,12 +24,7 @@ public class TigerConverterFactory extends Converter.Factory {
 
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
-        Converter<ResponseBody, ?> converter = null;
-        switch (mType) {
-            case NET_EASY:
-                converter = new NetEasyResponseBodyConverter<List<VideoData>>();
-                break;
-        }
-        return converter;
+
+        return new TigerResponseBodyConverter<List<VideoData>>(mType);
     }
 }

@@ -6,5 +6,7 @@ package cn.ittiger.video.http;
  */
 public enum DataType {
 
-    NET_EASY
+    NET_EASY,
+    CNEWS,
+    TTKB
 }

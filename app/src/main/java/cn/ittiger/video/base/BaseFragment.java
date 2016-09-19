@@ -44,7 +44,9 @@ public abstract class BaseFragment extends Fragment {
                 clickToRefresh();
             }
         });
-        clickToRefresh();
+        if(isInitRefreshEnable()) {
+            clickToRefresh();
+        }
         return view;
     }
 
@@ -65,10 +67,17 @@ public abstract class BaseFragment extends Fragment {
         refreshData();
     }
 
+    public boolean isInitRefreshEnable() {
+
+        return true;
+    }
+
+    public abstract int getName();
+
     /**
      * 初始化数据
      */
-    public abstract void refreshData();
+    public void refreshData() {}
 
     /**
      * 开始加载数据

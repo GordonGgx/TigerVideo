@@ -98,7 +98,7 @@ public class CommonRecyclerView extends RecyclerView {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 
                 super.onScrollStateChanged(recyclerView, newState);
-                if(newState == SCROLL_STATE_IDLE && mIsAutoLoadMore && mLoadMoreListener != null) {
+                if(newState == SCROLL_STATE_IDLE && mIsAutoLoadMore && mLoadMoreListener != null && getAdapter() != null) {
                     if(mLastVisiblePosition + 1 == getAdapter().getItemCount()) {
                         mLoadMoreListener.onLoadMore();
                     }

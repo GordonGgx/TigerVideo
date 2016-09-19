@@ -1,7 +1,9 @@
 package cn.ittiger.video.http;
 
 import cn.ittiger.video.http.converter.TigerConverterFactory;
+import cn.ittiger.video.http.service.CNewsApi;
 import cn.ittiger.video.http.service.NetEasyApi;
+import cn.ittiger.video.http.service.TtKbApi;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
@@ -26,7 +28,11 @@ public class RetrofitFactory {
 
     private static final int TIME_OUT = 12;//超时时间
     private static final String NETEASY_BASE_URL = "http://c.m.163.com/";
+    private static final String TTKB_BASE_URL = "http://video.toutiaokuaibao.com/";
+    private static final String CNEWS_BASE_URL = "http://r.cnews.qq.com/";
     private static volatile NetEasyApi sNetEasyService;
+    private static volatile CNewsApi sCNewsService;
+    private static volatile TtKbApi sTtKbService;
 
     public static NetEasyApi getNetEasyVideoService() {
 
@@ -53,5 +59,59 @@ public class RetrofitFactory {
                 .addConverterFactory(TigerConverterFactory.create(DataType.NET_EASY))
                 .build();
         return retrofit.create(NetEasyApi.class);
+    }
+
+    public static CNewsApi getCNewsVideoService() {
+
+        if(sCNewsService == null) {
+            synchronized (RetrofitFactory.class) {
+                if(sCNewsService == null) {
+                    sCNewsService = createCNewsService();
+                }
+            }
+        }
+        return sCNewsService;
+    }
+
+    private static CNewsApi createCNewsService() {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CNEWS_BASE_URL)
+                .client(client)
+                .addConverterFactory(TigerConverterFactory.create(DataType.CNEWS))
+                .build();
+        return retrofit.create(CNewsApi.class);
+    }
+
+    public static TtKbApi getTtKbVideoService() {
+
+        if(sTtKbService == null) {
+            synchronized (RetrofitFactory.class) {
+                if(sTtKbService == null) {
+                    sTtKbService = createTtKbService();
+                }
+            }
+        }
+        return sTtKbService;
+    }
+
+    private static TtKbApi createTtKbService() {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(TTKB_BASE_URL)
+                .client(client)
+                .addConverterFactory(TigerConverterFactory.create(DataType.TTKB))
+                .build();
+        return retrofit.create(TtKbApi.class);
     }
 }

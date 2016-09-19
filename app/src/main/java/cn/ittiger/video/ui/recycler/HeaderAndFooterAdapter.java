@@ -111,6 +111,17 @@ public abstract class HeaderAndFooterAdapter<T> extends RecyclerView.Adapter<Vie
         notifyItemRangeInserted(positionStart, list.size());
     }
 
+    public void addAll(List<T> list, int position) {
+
+        int positionStart = getHeaderViewCount() + position;
+        if(mList == null) {
+            mList = list;
+        } else {
+            mList.addAll(positionStart, list);
+        }
+        notifyDataSetChanged();
+    }
+
     public void add(T item) {
 
         if(mList == null) {

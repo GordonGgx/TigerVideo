@@ -10,7 +10,8 @@ import cn.ittiger.video.bean.VideoData;
 import cn.ittiger.video.player.VideoPlayerHelper;
 import cn.ittiger.video.ui.recycler.CommonRecyclerView;
 import cn.ittiger.video.ui.recycler.SpacesItemDecoration;
-import cn.ittiger.video.util.Callback;
+import cn.ittiger.video.util.CallbackHandler;
+import cn.ittiger.video.util.UIUtil;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -42,7 +43,7 @@ public abstract class VideoFragment extends BaseFragment implements
     @Override
     public View getContentView(LayoutInflater inflater, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_main, null);
+        View view = inflater.inflate(R.layout.fragment_video, null);
         ButterKnife.bind(this, view);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.d_10)));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -92,18 +93,22 @@ public abstract class VideoFragment extends BaseFragment implements
 
         mCurPage = 1;
 
-        queryVideoData(mCurPage, new Callback<List<VideoData>>() {
+        queryVideoData(mCurPage, new CallbackHandler<List<VideoData>>() {
             @Override
             public void callback(List<VideoData> videos) {
 
+                if(videos == null || videos.size() == 0) {
+                    refreshFailed();
+                    return;
+                }
                 if (mVideoAdapter == null) {
                     mVideoAdapter = new VideoAdapter(mContext, videos);
                     mVideoAdapter.enableFooterView();
-                    View footerView = LayoutInflater.from(mContext).inflate(R.layout.video_list_item, mRecyclerView, false);
+                    View footerView = LayoutInflater.from(mContext).inflate(R.layout.footer_layout, mRecyclerView, false);
                     mVideoAdapter.addFooterView(footerView);
                     mRecyclerView.setAdapter(mVideoAdapter);
                 } else {
-                    mVideoAdapter.reset(videos);
+                    mVideoAdapter.addAll(videos, 0);
                 }
                 mCurPage++;
                 refreshSuccess();
@@ -114,21 +119,23 @@ public abstract class VideoFragment extends BaseFragment implements
     @Override
     public void onLoadMore() {
 
-        queryVideoData(mCurPage, new Callback<List<VideoData>>() {
+        queryVideoData(mCurPage, new CallbackHandler<List<VideoData>>() {
             @Override
-            public void callback(List<VideoData> videoDatas) {
+            public void callback(List<VideoData> videos) {
 
-                mVideoAdapter.addAll(videoDatas);
-                if(videoDatas.size() > 0) {
+                if(videos == null || videos.size() == 0) {
+                    UIUtil.showToast(mContext, mContext.getString(R.string.no_more_videos));
+                    return;
+                }
+                mVideoAdapter.addAll(videos);
+                if(videos.size() > 0) {
                     mCurPage ++;
                 }
             }
         });
     }
 
-    public abstract void queryVideoData(int curPage, Callback<List<VideoData>> callback);
-
-    public abstract String getName();
+    public abstract void queryVideoData(int curPage, CallbackHandler<List<VideoData>> callback);
 
     @Override
     public void refreshFailed() {
@@ -142,5 +149,14 @@ public abstract class VideoFragment extends BaseFragment implements
 
         super.refreshSuccess();
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        VideoPlayerHelper.getInstance().stop();
+        super.onDestroyView();
+        mVideoAdapter = null;
+        mCurPage = 1;
     }
 }

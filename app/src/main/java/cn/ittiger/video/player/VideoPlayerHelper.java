@@ -149,9 +149,7 @@ public class VideoPlayerHelper {
             mSmallVideoPlayerContainer.setVisibility(View.GONE);
         }
         mVideoPlayerView.onDestroy();
-        mCurrPlayPosition = -1;
-        mLastPlayPosition = -1;
-        mParent = null;
+        clear();
     }
 
     public VideoPlayState getVideoPlayState() {
@@ -167,5 +165,12 @@ public class VideoPlayerHelper {
     public int getLastPlayPosition() {
 
         return mLastPlayPosition;
+    }
+
+    public void clear() {
+
+        mCurrPlayPosition = -1;
+        mLastPlayPosition = -1;
+        mParent = null;
     }
 }

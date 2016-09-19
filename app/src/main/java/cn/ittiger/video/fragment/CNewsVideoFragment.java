@@ -16,15 +16,13 @@ import java.util.List;
  * @author laohu
  * @site http://ittiger.cn
  */
-public class NetEasyVideoFragment extends VideoFragment {
-
-    private static final int PAGE_SIZE = 20;
+public class CNewsVideoFragment extends VideoFragment {
 
     @Override
     public void queryVideoData(int curPage, final CallbackHandler<List<VideoData>> callback) {
 
-        int offset = (curPage - 1) * PAGE_SIZE;
-        Call<List<VideoData>> call = RetrofitFactory.getNetEasyVideoService().getVideos(PAGE_SIZE, offset);
+        int direction = curPage == 1 ? 0 : 1;
+        Call<List<VideoData>> call = RetrofitFactory.getCNewsVideoService().getVideos(curPage, direction, direction);
         call.enqueue(new Callback<List<VideoData>>() {
 
             @Override
@@ -61,6 +59,6 @@ public class NetEasyVideoFragment extends VideoFragment {
     @Override
     public int getName() {
 
-        return R.string.net_easy_video;
+        return R.string.cnews_video;
     }
 }

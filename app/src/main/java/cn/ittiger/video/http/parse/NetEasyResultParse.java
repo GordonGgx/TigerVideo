@@ -27,8 +27,8 @@ public class NetEasyResultParse implements ResultParse {
         for(int i = 0; i < videos.length(); i++) {
             item = videos.getJSONObject(i);
             VideoData videoData = new VideoData();
-            videoData.setId(item.optString("topicSid"));
-            videoData.setImageUrl(item.optString("topicImg"));
+            videoData.setId(item.optString("vid"));
+            videoData.setImageUrl(item.optString("cover"));
             videoData.setTitle(item.optString("title"));
             videoData.setVideoUrl(item.optString("mp4_url"));
             long playDuration = item.optLong("playCount");

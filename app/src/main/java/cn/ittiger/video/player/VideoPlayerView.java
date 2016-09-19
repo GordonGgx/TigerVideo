@@ -172,9 +172,8 @@ public class VideoPlayerView extends RelativeLayout
     public void play(String videoUrl) {
 
         mVideoUrl = videoUrl;
-        mVideoUrl = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1461625479791.mp4";
         createMediaPlayer();
-        setVideoPlayState(VideoPlayState.LOADING);
+        setVideoPlayState(VideoPlayState.PREPARE_LOAD);
     }
 
     /**
@@ -230,11 +229,9 @@ public class VideoPlayerView extends RelativeLayout
 
         try {
             mPlayer.setSurface(mSurface);
-            if(getPlayScreenState() == PlayScreenState.SMALL) {
-                return;
-            }
             if(mVideoPlayState == VideoPlayState.STOP ||
-                mVideoPlayState == VideoPlayState.LOADING) {
+                mVideoPlayState == VideoPlayState.PREPARE_LOAD) {
+                setVideoPlayState(VideoPlayState.LOADING);
                 mPlayer.setDataSource(videoUrl);
                 mPlayer.prepareAsync();
             }
@@ -369,6 +366,9 @@ public class VideoPlayerView extends RelativeLayout
 
     public void onDestroy() {
 
+        if(mVideoPlayState == VideoPlayState.STOP) {
+            return;
+        }
         setVideoPlayState(VideoPlayState.STOP);
         mVideoPlayerControllerView.onDestroy();
         if(mPlayer != null) {
@@ -381,7 +381,8 @@ public class VideoPlayerView extends RelativeLayout
         }
         mVideoContainer.removeView(mTextureView);
         mTextureView = null;
-        ((ViewGroup)getParent()).removeView(this);
+        ((ViewGroup) getParent()).removeView(this);
+        VideoPlayerHelper.getInstance().clear();
     }
 
     public VideoPlayState getVideoPlayState() {
@@ -454,6 +455,7 @@ public class VideoPlayerView extends RelativeLayout
                 hidePlayButtonIfNeed();
                 setPlayScreenState(PlayScreenState.NORMAL);
                 break;
+            case PREPARE_LOAD:
             case LOADING:
                 showLoadingBarIfNeed();
                 break;

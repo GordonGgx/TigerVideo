@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 public abstract class BaseActivity extends AppCompatActivity {
     protected PageLoadingHelper mPageLoadingHelper;
-    protected boolean mIsInitRefresh = true;
     protected Toolbar mToolbar;
     protected Context mContext;
 
@@ -57,12 +56,17 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
 
-        if(mIsInitRefresh) {
+        if(isInitRefreshEnable()) {
             clickToRefresh();
         }
     }
 
     public boolean isNavigationButtonEnable() {
+
+        return true;
+    }
+
+    public boolean isInitRefreshEnable() {
 
         return true;
     }
@@ -86,7 +90,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 初始化数据
      */
-    public abstract void refreshData();
+    public void refreshData() {
+
+    }
 
     /**
      * 开始加载数据

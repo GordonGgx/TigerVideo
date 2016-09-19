@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="视频">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_net_easy"
+                    android:icon="@drawable/nav_net_easy"
+                    android:title="@string/net_easy_video"/>
+                <item
+                    android:id="@+id/nav_ttkb"
+                    android:icon="@drawable/nav_ttkb"
+                    android:title="@string/ttkb_video"/>
+                <item
+                    android:id="@+id/nav_cnews"
+                    android:icon="@drawable/nav_cnew"
+                    android:title="@string/cnews_video"/>
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="选项">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/nav_share"
+                android:title="@string/share_app"/>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/nav_about"
+                android:title="@string/about"/>
+        </menu>
+    </item>
+
+</menu>

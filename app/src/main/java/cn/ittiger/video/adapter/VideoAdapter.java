@@ -11,12 +11,15 @@ import cn.ittiger.video.player.VideoPlayState;
 import cn.ittiger.video.player.VideoPlayerHelper;
 import cn.ittiger.video.util.DisplayManager;
 
+import com.bumptech.glide.Glide;
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -45,35 +48,14 @@ public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
     public void onBindItemViewHolder(ViewHolder holder, int position, VideoData item) {
 
         VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-        int value = position % 8;
-        switch (value) {
-            case 0:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_8);
-                break;
-            case 1:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_1);
-                break;
-            case 2:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_2);
-                break;
-            case 3:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_3);
-                break;
-            case 4:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_4);
-                break;
-            case 5:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_5);
-                break;
-            case 6:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_6);
-                break;
-            case 7:
-                videoViewHolder.mVideoImage.setImageResource(R.drawable.beautiful_7);
-                break;
-        }
-        videoViewHolder.itemView.setTag(R.id.tag_video_list_item, VideoPlayState.STOP);
+        Glide.with(mContext).load(item.getImageUrl())
+                .placeholder(R.drawable.video_image_place_holder)
+                .error(R.drawable.video_image_place_holder)
+                .into(videoViewHolder.mVideoImage);
+        videoViewHolder.mDuration.setText(item.getDuration());
+        videoViewHolder.mTitle.setText(item.getTitle());
         videoViewHolder.setPosition(position);
+        videoViewHolder.itemView.setTag(R.id.tag_video_list_item, VideoPlayState.STOP);
     }
 
     class VideoViewHolder extends ViewHolder {
@@ -81,6 +63,11 @@ public class VideoAdapter extends HeaderAndFooterAdapter<VideoData> {
         ImageView mVideoImage;
         @BindView(R.id.iv_video_item_play_btn)
         ImageView mPlayImage;
+        @BindView(R.id.tv_video_duration)
+        TextView mDuration;
+        @BindView(R.id.tv_video_title)
+        TextView mTitle;
+
         int mPosition;
 
         public VideoViewHolder(View itemView) {
