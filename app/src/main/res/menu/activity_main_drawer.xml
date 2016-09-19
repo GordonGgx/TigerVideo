@@ -3,20 +3,22 @@
 
     <item android:title="视频">
         <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_net_easy"
-                    android:icon="@drawable/nav_net_easy"
-                    android:title="@string/net_easy_video"/>
-                <item
-                    android:id="@+id/nav_ttkb"
-                    android:icon="@drawable/nav_ttkb"
-                    android:title="@string/ttkb_video"/>
-                <item
-                    android:id="@+id/nav_cnews"
-                    android:icon="@drawable/nav_cnew"
-                    android:title="@string/cnews_video"/>
-            </group>
+            <item
+                android:id="@+id/nav_net_easy"
+                android:icon="@drawable/nav_net_easy"
+                android:checkable="true"
+                android:checked="true"
+                android:title="@string/net_easy_video"/>
+            <item
+                android:id="@+id/nav_ttkb"
+                android:icon="@drawable/nav_ttkb"
+                android:checkable="true"
+                android:title="@string/ttkb_video"/>
+            <item
+                android:id="@+id/nav_cnews"
+                android:icon="@drawable/nav_cnew"
+                android:checkable="true"
+                android:title="@string/cnews_video"/>
         </menu>
     </item>
 
@@ -25,10 +27,12 @@
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/nav_share"
+                android:checkable="true"
                 android:title="@string/share_app"/>
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/nav_about"
+                android:checkable="true"
                 android:title="@string/about"/>
         </menu>
     </item>
