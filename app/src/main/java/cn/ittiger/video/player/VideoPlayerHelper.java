@@ -47,6 +47,7 @@ public class VideoPlayerHelper {
 
         if(getVideoPlayState() != VideoPlayState.STOP) {
             mVideoPlayerView.onDestroy();
+            mSmallVideoPlayerContainer.setVisibility(View.GONE);
         }
         parent.addView(mVideoPlayerView);
         mVideoPlayerView.play(videoUrl);

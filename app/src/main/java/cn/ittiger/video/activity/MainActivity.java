@@ -6,7 +6,7 @@ import cn.ittiger.video.R;
 import cn.ittiger.video.app.TumblrApplication;
 import cn.ittiger.video.base.BaseFragment;
 import cn.ittiger.video.fragment.AboutFragment;
-import cn.ittiger.video.fragment.CNewsVideoFragment;
+import cn.ittiger.video.fragment.Wu5LiVideoFragment;
 import cn.ittiger.video.fragment.NetEasyVideoFragment;
 import cn.ittiger.video.fragment.TtKbVideoFragment;
 import cn.ittiger.video.player.VideoPlayerHelper;
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.nav_ttkb:
                     fragment = new TtKbVideoFragment();
                     break;
-                case R.id.nav_cnews:
-                    fragment = new CNewsVideoFragment();
+                case R.id.nav_wu5li:
+                    fragment = new Wu5LiVideoFragment();
                     break;
                 case R.id.nav_share://分享
                     ShareHelper.shareApp(this);

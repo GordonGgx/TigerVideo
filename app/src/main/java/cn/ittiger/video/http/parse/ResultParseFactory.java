@@ -15,8 +15,8 @@ public class ResultParseFactory {
             case NET_EASY:
                 parse = new NetEasyResultParse();
                 break;
-            case CNEWS:
-                parse = new CNewsResultParse();
+            case WU5LI:
+                parse = new Wu5LiResultParse();
                 break;
             case TTKB:
                 parse = new TtKbResultParse();

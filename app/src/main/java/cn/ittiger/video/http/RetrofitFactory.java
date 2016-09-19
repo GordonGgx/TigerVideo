@@ -1,12 +1,16 @@
 package cn.ittiger.video.http;
 
 import cn.ittiger.video.http.converter.TigerConverterFactory;
-import cn.ittiger.video.http.service.CNewsApi;
+import cn.ittiger.video.http.service.Wu5LiApi;
 import cn.ittiger.video.http.service.NetEasyApi;
 import cn.ittiger.video.http.service.TtKbApi;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -29,9 +33,9 @@ public class RetrofitFactory {
     private static final int TIME_OUT = 12;//超时时间
     private static final String NETEASY_BASE_URL = "http://c.m.163.com/";
     private static final String TTKB_BASE_URL = "http://video.toutiaokuaibao.com/";
-    private static final String CNEWS_BASE_URL = "http://r.cnews.qq.com/";
+    private static final String WU5LI_BASE_URL = "http://api.5wuli.com/";
     private static volatile NetEasyApi sNetEasyService;
-    private static volatile CNewsApi sCNewsService;
+    private static volatile Wu5LiApi sWu5LiService;
     private static volatile TtKbApi sTtKbService;
 
     public static NetEasyApi getNetEasyVideoService() {
@@ -61,19 +65,19 @@ public class RetrofitFactory {
         return retrofit.create(NetEasyApi.class);
     }
 
-    public static CNewsApi getCNewsVideoService() {
+    public static Wu5LiApi getWu5LiVideoService() {
 
-        if(sCNewsService == null) {
+        if(sWu5LiService == null) {
             synchronized (RetrofitFactory.class) {
-                if(sCNewsService == null) {
-                    sCNewsService = createCNewsService();
+                if(sWu5LiService == null) {
+                    sWu5LiService = createWu5LiService();
                 }
             }
         }
-        return sCNewsService;
+        return sWu5LiService;
     }
 
-    private static CNewsApi createCNewsService() {
+    private static Wu5LiApi createWu5LiService() {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
@@ -81,11 +85,11 @@ public class RetrofitFactory {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(CNEWS_BASE_URL)
+                .baseUrl(WU5LI_BASE_URL)
                 .client(client)
-                .addConverterFactory(TigerConverterFactory.create(DataType.CNEWS))
+                .addConverterFactory(TigerConverterFactory.create(DataType.WU5LI))
                 .build();
-        return retrofit.create(CNewsApi.class);
+        return retrofit.create(Wu5LiApi.class);
     }
 
     public static TtKbApi getTtKbVideoService() {

@@ -1,16 +1,15 @@
 package cn.ittiger.video.http.converter;
 
 import cn.ittiger.video.http.DataType;
-import cn.ittiger.video.http.parse.CNewsResultParse;
-import cn.ittiger.video.http.parse.NetEasyResultParse;
 import cn.ittiger.video.http.parse.ResultParse;
 import cn.ittiger.video.http.parse.ResultParseFactory;
-import cn.ittiger.video.http.parse.TtKbResultParse;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -38,6 +37,7 @@ final class TigerResponseBodyConverter<T> implements Converter<ResponseBody, T> 
             }
             return (T) parse.parse(jsonObj);
         } catch(JSONException e) {
+            Log.d("Converter", "converter error", e);
             return null;
         }
     }
