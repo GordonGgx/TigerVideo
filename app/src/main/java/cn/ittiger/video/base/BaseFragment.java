@@ -78,6 +78,13 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+        mIsLoaded = false;
+    }
+
     /**
      * Fragment数据视图
      * @param inflater
