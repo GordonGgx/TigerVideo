@@ -7,7 +7,6 @@ import cn.ittiger.video.http.parse.IFengTabResultParse;
 import cn.ittiger.video.http.parse.NetEasyResultParse;
 import cn.ittiger.video.http.parse.ResultParse;
 import cn.ittiger.video.http.parse.TtKbResultParse;
-import cn.ittiger.video.http.parse.Wu5LiResultParse;
 
 import org.json.JSONObject;
 
@@ -26,9 +25,6 @@ public class ResultParseFactory {
         switch (type) {
             case NET_EASY:
                 parse = new NetEasyResultParse();
-                break;
-            case WU5LI:
-                parse = new Wu5LiResultParse();
                 break;
             case TTKB:
                 parse = new TtKbResultParse();

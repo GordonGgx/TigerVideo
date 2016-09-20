@@ -6,7 +6,6 @@ import cn.ittiger.video.fragment.IFengFragment;
 import cn.ittiger.video.fragment.IFengTabFragment;
 import cn.ittiger.video.fragment.NetEasyVideoFragment;
 import cn.ittiger.video.fragment.TtKbVideoFragment;
-import cn.ittiger.video.fragment.Wu5LiVideoFragment;
 import cn.ittiger.video.http.DataType;
 
 import android.os.Bundle;
@@ -27,9 +26,6 @@ public class FragmentFactory {
                 break;
             case TTKB:
                 fragment = new TtKbVideoFragment();
-                break;
-            case WU5LI:
-                fragment = new Wu5LiVideoFragment();
                 break;
             case IFENG:
                 fragment = new IFengFragment();

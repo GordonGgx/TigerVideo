@@ -11,7 +11,7 @@ import android.app.Application;
 /**
  * @author laohu
  */
-public class TumblrApplication extends Application implements IDbApplication {
+public class TigerApplication extends Application implements IDbApplication {
     /**
      * 本地数据库配置
      */
@@ -31,7 +31,7 @@ public class TumblrApplication extends Application implements IDbApplication {
     public SQLiteDBConfig getGlobalDbConfig() {
 
         if(mDBConfig == null) {
-            synchronized (TumblrApplication.class) {
+            synchronized (TigerApplication.class) {
                 if(mDBConfig == null) {
                     mDBConfig = new SQLiteDBConfig(getApplicationContext());
                     mDBConfig.setDbName(getResources().getString(R.string.app_name) + ".db");

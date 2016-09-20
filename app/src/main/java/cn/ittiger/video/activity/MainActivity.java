@@ -3,13 +3,10 @@ package cn.ittiger.video.activity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.ittiger.video.R;
-import cn.ittiger.video.app.TumblrApplication;
+import cn.ittiger.video.app.TigerApplication;
 import cn.ittiger.video.base.BaseFragment;
 import cn.ittiger.video.factory.FragmentFactory;
 import cn.ittiger.video.fragment.AboutFragment;
-import cn.ittiger.video.fragment.Wu5LiVideoFragment;
-import cn.ittiger.video.fragment.NetEasyVideoFragment;
-import cn.ittiger.video.fragment.TtKbVideoFragment;
 import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.player.VideoPlayerHelper;
 import cn.ittiger.video.util.ShareHelper;
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
 
         super.onDestroy();
-        ((TumblrApplication)getApplication()).onDestroy();
+        ((TigerApplication)getApplication()).onDestroy();
         VideoPlayerHelper.getInstance().stop();
     }
 
@@ -125,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
 
+        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
         if(System.currentTimeMillis() - exitTime > 2000) {
             UIUtil.showToast(this, R.string.two_click_exit_app);
             exitTime = System.currentTimeMillis();
