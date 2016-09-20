@@ -5,6 +5,7 @@ import cn.ittiger.video.util.PageLoadingHelper;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ public abstract class BaseFragment extends Fragment {
 
     protected Context mContext;
     PageLoadingHelper mPageLoadingHelper;
+    private boolean mIsLoaded = false;
+    private Handler mHandler = new Handler();
 
     @Override
     public void onAttach(Context context) {
@@ -44,10 +47,35 @@ public abstract class BaseFragment extends Fragment {
                 clickToRefresh();
             }
         });
-        if(isInitRefreshEnable()) {
+        if(isInitRefreshEnable() && isDelayRefreshEnable() == false) {
             clickToRefresh();
         }
         return view;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser && isInitRefreshEnable() == false &&
+            isDelayRefreshEnable() && mIsLoaded == false) {
+            delayLoad();
+        }
+    }
+
+    private void delayLoad() {
+
+        if(mPageLoadingHelper != null) {
+            clickToRefresh();
+            mIsLoaded = true;
+        } else {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    delayLoad();
+                }
+            }, 100);
+        }
     }
 
     /**
@@ -70,6 +98,11 @@ public abstract class BaseFragment extends Fragment {
     public boolean isInitRefreshEnable() {
 
         return true;
+    }
+
+    public boolean isDelayRefreshEnable() {
+
+        return false;
     }
 
     public abstract int getName();

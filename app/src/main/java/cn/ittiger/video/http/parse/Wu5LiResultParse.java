@@ -1,6 +1,7 @@
 package cn.ittiger.video.http.parse;
 
 import cn.ittiger.video.bean.VideoData;
+import cn.ittiger.video.bean.VideoTabData;
 import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.DataKeeper;
 import cn.ittiger.video.util.Utils;
@@ -56,5 +57,11 @@ public class Wu5LiResultParse implements ResultParse {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<VideoTabData> parseTab(JSONObject json) throws JSONException {
+
+        return null;
     }
 }

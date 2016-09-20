@@ -1,9 +1,7 @@
 package cn.ittiger.video.bean;
 
-import cn.ittiger.database.annotation.NotDBColumn;
 import cn.ittiger.database.annotation.PrimaryKey;
 import cn.ittiger.database.annotation.Table;
-import cn.ittiger.video.http.DataType;
 
 /**
  * @author: laohu on 2016/8/24
@@ -12,7 +10,7 @@ import cn.ittiger.video.http.DataType;
 @Table(name = "VideoTable")
 public class VideoData {
 
-    @PrimaryKey
+
     private String id;//视频id
     private String duration;//视频时长
     private String title;//视频标题

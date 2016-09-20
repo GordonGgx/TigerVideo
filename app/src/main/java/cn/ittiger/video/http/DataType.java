@@ -8,7 +8,8 @@ public enum DataType {
 
     NET_EASY(1),
     WU5LI(2),
-    TTKB(3);
+    TTKB(3),
+    IFENG(4);
 
     int mValue;
 

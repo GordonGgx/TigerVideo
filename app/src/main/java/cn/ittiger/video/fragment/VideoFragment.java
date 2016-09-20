@@ -7,12 +7,18 @@ import cn.ittiger.video.R;
 import cn.ittiger.video.adapter.VideoAdapter;
 import cn.ittiger.video.base.BaseFragment;
 import cn.ittiger.video.bean.VideoData;
+import cn.ittiger.video.http.DataType;
+import cn.ittiger.video.factory.ResultParseFactory;
 import cn.ittiger.video.player.VideoPlayerHelper;
 import cn.ittiger.video.ui.recycler.CommonRecyclerView;
 import cn.ittiger.video.ui.recycler.SpacesItemDecoration;
 import cn.ittiger.video.util.CallbackHandler;
 import cn.ittiger.video.util.UIUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -37,6 +43,7 @@ public abstract class VideoFragment extends BaseFragment implements
     @BindView(R.id.small_video_player_container)
     RelativeLayout mSmallVideoPlayerContainer;
 
+    private View mFooterView;
     private VideoAdapter mVideoAdapter;
     private int mCurPage = 1;
 
@@ -93,19 +100,19 @@ public abstract class VideoFragment extends BaseFragment implements
 
         mCurPage = 1;
 
-        queryVideoData(mCurPage, new CallbackHandler<List<VideoData>>() {
+        queryVideo(mCurPage, new CallbackHandler<List<VideoData>>() {
             @Override
             public void callback(List<VideoData> videos) {
 
-                if(videos == null || videos.size() == 0) {
+                if (videos.size() == 0) {
                     refreshFailed();
                     return;
                 }
                 if (mVideoAdapter == null) {
                     mVideoAdapter = new VideoAdapter(mContext, videos);
                     mVideoAdapter.enableFooterView();
-                    View footerView = LayoutInflater.from(mContext).inflate(R.layout.footer_layout, mRecyclerView, false);
-                    mVideoAdapter.addFooterView(footerView);
+                    mFooterView = LayoutInflater.from(mContext).inflate(R.layout.footer_layout, mRecyclerView, false);
+                    mVideoAdapter.addFooterView(mFooterView);
                     mRecyclerView.setAdapter(mVideoAdapter);
                 } else {
                     mVideoAdapter.addAll(videos, 0);
@@ -119,23 +126,66 @@ public abstract class VideoFragment extends BaseFragment implements
     @Override
     public void onLoadMore() {
 
-        queryVideoData(mCurPage, new CallbackHandler<List<VideoData>>() {
+        if(mFooterView.getVisibility() == View.GONE) {
+            mFooterView.setVisibility(View.VISIBLE);
+        }
+        queryVideo(mCurPage, new CallbackHandler<List<VideoData>>() {
             @Override
             public void callback(List<VideoData> videos) {
 
-                if(videos == null || videos.size() == 0) {
+                if (videos == null || videos.size() == 0) {
+                    mFooterView.setVisibility(View.GONE);
                     UIUtil.showToast(mContext, mContext.getString(R.string.no_more_videos));
                     return;
                 }
                 mVideoAdapter.addAll(videos);
-                if(videos.size() > 0) {
-                    mCurPage ++;
+                if (videos.size() > 0) {
+                    mCurPage++;
                 }
             }
         });
     }
 
-    public abstract void queryVideoData(int curPage, CallbackHandler<List<VideoData>> callback);
+    private void queryVideo(int pageNum, final CallbackHandler<List<VideoData>> callback) {
+
+        Call<String> call = getHttpCall(pageNum);
+        call.enqueue(new Callback<String>() {
+
+            @Override
+            public void onResponse(Call<String> call, final Response<String> response) {
+
+                if (response.isSuccessful()) {
+
+                    queryVideoHandler(ResultParseFactory.parse(response.body(), getType()), callback);
+                } else {
+                    onFailure(call, new NullPointerException("not query videos"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+                queryVideoHandler(null, callback);
+            }
+        });
+    }
+
+    private void queryVideoHandler(final List<VideoData> videos, final CallbackHandler<List<VideoData>> callback) {
+
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (callback != null) {
+                    callback.callback(videos);
+                }
+            }
+        });
+    }
+
+    public abstract Call<String> getHttpCall(int curPage);
+
+    public abstract DataType getType();
 
     @Override
     public void refreshFailed() {

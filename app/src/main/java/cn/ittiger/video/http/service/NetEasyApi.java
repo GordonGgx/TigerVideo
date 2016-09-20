@@ -1,11 +1,8 @@
 package cn.ittiger.video.http.service;
 
-import cn.ittiger.video.bean.VideoData;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-
-import java.util.List;
 
 /**
  * http://c.m.163.com/recommend/getChanListNews?channel=T1457068979049&size=20&offset=0&fn=3&passport=h3o88AuDhdH7tlyrE3hlILX2WMCoMqapk08GhEzPqX4%3D&devId=DWT861zlolJo7mHnyynnGA%3D%3D&version=15.0&net=wifi&ts=1474185450&sign=JmMhXTnPo%2BqgTgwyxKstDgS9lmS5Pv%2BUCP5tZ%2FrWevV48ErR02zJ6%2FKXOnxX046I&encryption=1
@@ -18,5 +15,5 @@ import java.util.List;
 public interface NetEasyApi {
 
     @GET("recommend/getChanListNews?channel=T1457068979049&fn=3&passport=h3o88AuDhdH7tlyrE3hlILX2WMCoMqapk08GhEzPqX4%3D&devId=DWT861zlolJo7mHnyynnGA%3D%3D&version=15.0&net=wifi&ts=1474185450&sign=JmMhXTnPo%2BqgTgwyxKstDgS9lmS5Pv%2BUCP5tZ%2FrWevV48ErR02zJ6%2FKXOnxX046I&encryption=1")
-    Call<List<VideoData>> getVideos(@Query("size") int size, @Query("offset") int offset);
+    Call<String> getVideos(@Query("size") int size, @Query("offset") int offset);
 }

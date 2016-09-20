@@ -14,11 +14,16 @@
                 android:icon="@drawable/nav_ttkb"
                 android:checkable="true"
                 android:title="@string/ttkb_video"/>
-            <item
+            <!--<item
                 android:id="@+id/nav_wu5li"
                 android:icon="@drawable/nav_cnew"
                 android:checkable="true"
-                android:title="@string/wu5li_video"/>
+                android:title="@string/wu5li_video"/>-->
+            <item
+                android:id="@+id/nav_ifeng"
+                android:icon="@drawable/nav_cnew"
+                android:checkable="true"
+                android:title="@string/ifeng_video"/>
         </menu>
     </item>
 

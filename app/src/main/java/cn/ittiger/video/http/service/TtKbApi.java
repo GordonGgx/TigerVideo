@@ -1,13 +1,11 @@
 package cn.ittiger.video.http.service;
 
-import cn.ittiger.video.bean.VideoData;
 import retrofit2.Call;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,5 +24,5 @@ public interface TtKbApi {
               "User-Agent: okhttp/3.2.0"})
     @FormUrlEncoded
     @POST("app_video/getvideos")
-    Call<List<VideoData>> getVideos(@FieldMap Map<String, String> fieldMap);
+    Call<String> getVideos(@FieldMap Map<String, String> fieldMap);
 }

@@ -5,10 +5,12 @@ import butterknife.ButterKnife;
 import cn.ittiger.video.R;
 import cn.ittiger.video.app.TumblrApplication;
 import cn.ittiger.video.base.BaseFragment;
+import cn.ittiger.video.factory.FragmentFactory;
 import cn.ittiger.video.fragment.AboutFragment;
 import cn.ittiger.video.fragment.Wu5LiVideoFragment;
 import cn.ittiger.video.fragment.NetEasyVideoFragment;
 import cn.ittiger.video.fragment.TtKbVideoFragment;
+import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.player.VideoPlayerHelper;
 import cn.ittiger.video.util.ShareHelper;
 import cn.ittiger.video.util.UIUtil;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void init() {
 
-        NetEasyVideoFragment fragment = new NetEasyVideoFragment();
+        BaseFragment fragment = FragmentFactory.createMainFragment(DataType.NET_EASY);
         switchFragment(fragment);
         mNavigationView.setCheckedItem(R.id.nav_net_easy);
         mFragmentSparseArray.put(R.id.nav_net_easy, fragment);
@@ -75,14 +77,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch (id) {
                 case R.id.nav_net_easy:
                     if(fragment == null) {
-                        fragment = new NetEasyVideoFragment();
+                        fragment = FragmentFactory.createMainFragment(DataType.NET_EASY);
                     }
                     break;
                 case R.id.nav_ttkb:
-                    fragment = new TtKbVideoFragment();
+                    fragment = FragmentFactory.createMainFragment(DataType.TTKB);
                     break;
-                case R.id.nav_wu5li:
-                    fragment = new Wu5LiVideoFragment();
+                case R.id.nav_ifeng:
+                    fragment = FragmentFactory.createMainFragment(DataType.IFENG);
                     break;
                 case R.id.nav_share://分享
                     ShareHelper.shareApp(this);
