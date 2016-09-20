@@ -30,6 +30,9 @@ public class TigerConverterFactory extends Converter.Factory {
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
 
+        if(mType == DataType.WU5LI) {
+            return new JSONResponseBodyConverter<>(mType);
+        }
         return new TigerResponseBodyConverter<List<VideoData>>(mType);
     }
 

@@ -18,7 +18,8 @@ import java.util.List;
  */
 public interface Wu5LiApi {
 
-    @Headers({"Accept-Encoding: gzip","Connection: Keep-Alive",
+    @Headers({"Content-Type: application/json;charset=UTF-8",
+              "Accept-Encoding: gzip","Connection: Keep-Alive",
               "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.0.2; PLK-AL10 Build/HONORPLK-AL10) Wuli/2.4.0 (agent:s;channel:huawei;credential:e1MyMDEwMDAxMDF9LXsjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg2MDU4MjAzNDI5NzY4NX0teyMjIyMjIyMxNDc0MjgxNTc2OTk2LTY5MjUxMDY5Mzd9QDE0NzM0NzQ5NzM1NDk=;deviceId:860582034297685;osTypeId:01;detailInfo:android;simTypeId:02;netTypeId:01;deviceTypeId:01;osVersion:5.0.2;idfa:null)"})
     @GET("v1/video/list?pageSize=10")
     Call<List<VideoData>> getVideos(@Query("cursor") String cursor, @Query("slipType") String slipType);

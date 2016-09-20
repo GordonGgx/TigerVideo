@@ -6,6 +6,9 @@ import cn.ittiger.video.http.parse.ResultParseFactory;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,10 +20,10 @@ import java.io.IOException;
  * @author laohu
  * @site http://ittiger.cn
  */
-final class TigerResponseBodyConverter<T> implements Converter<ResponseBody, T> {
+final class JSONResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     private DataType mType;
 
-    TigerResponseBodyConverter(DataType type) {
+    JSONResponseBodyConverter(DataType type) {
 
         mType = type;
     }
@@ -29,15 +32,21 @@ final class TigerResponseBodyConverter<T> implements Converter<ResponseBody, T> 
     public T convert(ResponseBody value) throws IOException {
         try {
 
-            String str = value.string();
-            JSONObject jsonObj = new JSONObject(str);
-
+            JsonReader jsonReader = new Gson().newJsonReader(value.charStream());
+            jsonReader.setLenient(true);
+            jsonReader.beginObject();
+            while(jsonReader.hasNext()) {
+                String name = jsonReader.nextName();
+                String string = jsonReader.nextString();
+                Log.d("Tag", string);
+            }
+            jsonReader.endObject();
             ResultParse parse = ResultParseFactory.create(mType);
             if(parse == null) {
                 return null;
             }
-            return (T) parse.parse(jsonObj);
-        } catch(JSONException e) {
+            return null;
+        } catch(Exception e) {
             Log.d("Converter", "converter error", e);
             return null;
         }
