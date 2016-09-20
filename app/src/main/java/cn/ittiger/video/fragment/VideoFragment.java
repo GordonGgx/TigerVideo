@@ -104,7 +104,7 @@ public abstract class VideoFragment extends BaseFragment implements
             @Override
             public void callback(List<VideoData> videos) {
 
-                if (videos.size() == 0) {
+                if (videos == null || videos.size() == 0) {
                     refreshFailed();
                     return;
                 }
@@ -155,7 +155,6 @@ public abstract class VideoFragment extends BaseFragment implements
             public void onResponse(Call<String> call, final Response<String> response) {
 
                 if (response.isSuccessful()) {
-
                     queryVideoHandler(ResultParseFactory.parse(response.body(), getType()), callback);
                 } else {
                     onFailure(call, new NullPointerException("not query videos"));
