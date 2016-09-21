@@ -1,7 +1,6 @@
 package cn.ittiger.video.fragment;
 
 import cn.ittiger.video.R;
-import cn.ittiger.video.base.BaseFragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

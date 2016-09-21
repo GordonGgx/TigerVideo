@@ -1,4 +1,4 @@
-package cn.ittiger.video.base;
+package cn.ittiger.video.activity;
 
 import cn.ittiger.video.R;
 import cn.ittiger.video.util.PageLoadingHelper;

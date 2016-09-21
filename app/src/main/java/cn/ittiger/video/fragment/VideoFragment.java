@@ -5,7 +5,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ittiger.video.R;
 import cn.ittiger.video.adapter.VideoAdapter;
-import cn.ittiger.video.base.BaseFragment;
 import cn.ittiger.video.bean.VideoData;
 import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.factory.ResultParseFactory;

@@ -1,6 +1,6 @@
 package cn.ittiger.video.factory;
 
-import cn.ittiger.video.base.BaseFragment;
+import cn.ittiger.video.fragment.BaseFragment;
 import cn.ittiger.video.bean.VideoTabData;
 import cn.ittiger.video.fragment.IFengFragment;
 import cn.ittiger.video.fragment.IFengTabFragment;

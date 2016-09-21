@@ -4,7 +4,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.ittiger.video.R;
 import cn.ittiger.video.app.TigerApplication;
-import cn.ittiger.video.base.BaseFragment;
+import cn.ittiger.video.fragment.BaseFragment;
 import cn.ittiger.video.factory.FragmentFactory;
 import cn.ittiger.video.fragment.AboutFragment;
 import cn.ittiger.video.http.DataType;
