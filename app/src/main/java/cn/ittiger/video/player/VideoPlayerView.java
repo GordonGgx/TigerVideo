@@ -311,8 +311,10 @@ public class VideoPlayerView extends RelativeLayout
         public void onCompletion(MediaPlayer mp) {
 
             //播放结束
-            if(isFullScreen() && mExitFullScreenListener != null) {//全屏播放结束
+            if(getPlayScreenState() == PlayScreenState.FULL_SCREEN && mExitFullScreenListener != null) {//全屏播放结束
                 mExitFullScreenListener.exitFullScreen();
+            } if(getPlayScreenState() == PlayScreenState.SMALL) {//小窗口播放结束
+                VideoPlayerHelper.getInstance().stop();
             } else {
                 finish();
             }
@@ -346,7 +348,7 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public void onControllerShow() {
 
-            if(isFullScreen() && mVideoChangeProgressView.isShown()) {
+            if(getPlayScreenState() == PlayScreenState.FULL_SCREEN && mVideoChangeProgressView.isShown()) {
                 //当全屏进行手势操作时不显示播放暂停按钮
                 hidePlayButtonIfNeed();
             } else {
@@ -390,9 +392,9 @@ public class VideoPlayerView extends RelativeLayout
         return mVideoPlayState;
     }
 
-    private boolean isFullScreen() {
+    private PlayScreenState getScreenState() {
 
-        return mVideoPlayerControllerView.getPlayScreenState() == PlayScreenState.FULL_SCREEN;
+        return mVideoPlayerControllerView.getPlayScreenState();
     }
 
     /**---------------- 界面UI控制 ----------------------**/
@@ -489,7 +491,7 @@ public class VideoPlayerView extends RelativeLayout
         int resId = R.drawable.ic_play;
         switch (mVideoPlayState) {
             case PLAY:
-                if(isFullScreen()) {
+                if(getPlayScreenState() == PlayScreenState.FULL_SCREEN) {
                     resId = R.drawable.ic_pause_fullscreen;
                 } else {
                     resId = R.drawable.ic_pause;
@@ -498,7 +500,7 @@ public class VideoPlayerView extends RelativeLayout
             case STOP:
             case PAUSE:
             case FINISH:
-                if(isFullScreen()) {
+                if(getPlayScreenState() == PlayScreenState.FULL_SCREEN) {
                     resId = R.drawable.ic_play_fullscreen;
                 } else {
                     resId = R.drawable.ic_play;
@@ -612,7 +614,7 @@ public class VideoPlayerView extends RelativeLayout
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
-            if(!isFullScreen()) {
+            if(!(getPlayScreenState() == PlayScreenState.FULL_SCREEN)) {
                 return false;
             }
             if(mWidth == 0) {
